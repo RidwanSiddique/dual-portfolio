@@ -52,7 +52,7 @@ export function SpaceWallpaper() {
         })
 
         const spaceshipImage = new Image()
-        spaceshipImage.src = '/assets/spaceship_sprite.png'
+        spaceshipImage.src = '/assets/spaceship_sprite_v2.png'
 
         // Game State
         const spaceship = {
@@ -110,7 +110,14 @@ export function SpaceWallpaper() {
 
 
         // Game Loop
-        const update = (time: number) => {
+        let lastTime = 0
+        const MAX_ENTITIES = 150
+
+        const update = (timestamp: number) => {
+            if (!lastTime) lastTime = timestamp
+            const deltaTime = Math.min((timestamp - lastTime) / 1000, 0.05) // Cap delta to prevent huge jumps
+            lastTime = timestamp
+
             ctx.clearRect(0, 0, canvas.width, canvas.height)
 
             // --- Spaceship Logic ---
@@ -118,7 +125,9 @@ export function SpaceWallpaper() {
             if (Math.random() < 0.02) {
                 spaceship.targetX = Math.random() * (canvas.width - 100) + 50
             }
-            spaceship.x += (spaceship.targetX - spaceship.x) * 0.05
+            // Smooth movement with delta
+            const speed = 3.0 // Base speed multiplier
+            spaceship.x += (spaceship.targetX - spaceship.x) * speed * deltaTime
 
             // Draw Detailed Spaceship Image
             if (spaceshipImage.complete) {
@@ -145,38 +154,65 @@ export function SpaceWallpaper() {
             }
 
             // Fire Logic
-            if (time - spaceship.lastFired > 250) { // Faster fire rate
+            if (timestamp - spaceship.lastFired > 250) {
                 entities.push({
-                    x: spaceship.x, // Center
-                    y: spaceship.y - 40, // Nose
+                    x: spaceship.x,
+                    y: spaceship.y - 40,
                     vx: 0,
-                    vy: -12, // Faster bullets
+                    vy: -400, // Velocity in pixels per second
                     width: 4,
                     height: 15,
-                    color: '#00ff88', // Green laser
+                    color: '#00ff88',
                     type: 'bullet'
                 })
                 // Side cannons occasionally
                 if (Math.random() > 0.7) {
-                    entities.push({ x: spaceship.x - 25, y: spaceship.y - 10, vx: -1, vy: -10, width: 3, height: 10, color: '#ff00aa', type: 'bullet' })
-                    entities.push({ x: spaceship.x + 25, y: spaceship.y - 10, vx: 1, vy: -10, width: 3, height: 10, color: '#ff00aa', type: 'bullet' })
+                    entities.push({ x: spaceship.x - 25, y: spaceship.y - 10, vx: -30, vy: -350, width: 3, height: 10, color: '#ff00aa', type: 'bullet' })
+                    entities.push({ x: spaceship.x + 25, y: spaceship.y - 10, vx: 30, vy: -350, width: 3, height: 10, color: '#ff00aa', type: 'bullet' })
                 }
 
-                spaceship.lastFired = time
+                spaceship.lastFired = timestamp
             }
 
             // --- Entity Management ---
-            // Spawn new targets more frequently
-            if (Math.random() < 0.02 && entities.filter(e => e.type === 'target').length < 12) {
+            // Spawn new targets (Limit max count)
+            if (Math.random() < 0.02 && entities.filter(e => e.type === 'target').length < 8) { // Reduced max targets
                 spawnTarget()
+            }
+
+            // Hard limit on total entities to prevent memory issues
+            if (entities.length > MAX_ENTITIES) {
+                // Remove oldest particles first
+                const particlesStartIndex = entities.findIndex(e => e.type === 'particle')
+                if (particlesStartIndex !== -1) {
+                    entities.splice(particlesStartIndex, 1)
+                } else {
+                    entities.shift()
+                }
             }
 
             for (let i = entities.length - 1; i >= 0; i--) {
                 const e = entities[i]
 
-                // Movement
-                e.x += e.vx
-                e.y += e.vy
+                // Movement with Delta Time
+                // Actually, let's standardize all to delta time for consistency.
+                // Re-adjust velocities for delta time scaling:
+                // Bullets: vy ~ -400 px/s
+                // Targets: vy ~ 50 px/s
+                // Particles: v ~ 200 px/s
+
+                if (e.type === 'target') {
+                    e.y += e.vy // Targets were (0.8 to 1.3) per frame -> approx 60fps * 1 = 60px/s.
+                    // Let's keep targets simple for now as their `vy` was random logic.
+                } else if (e.type === 'bullet') {
+                    e.y += e.vy * deltaTime
+                    e.x += e.vx * deltaTime
+                } else if (e.type === 'particle') {
+                    e.x += e.vx * 60 * deltaTime
+                    e.y += e.vy * 60 * deltaTime
+                }
+
+
 
                 // Boundary Checks & Removal
                 if (e.type === 'bullet' && e.y < -20) {
@@ -189,7 +225,7 @@ export function SpaceWallpaper() {
                 }
                 if (e.type === 'particle') {
                     if (e.life !== undefined) {
-                        e.life -= 0.03
+                        e.life -= 2.0 * deltaTime // Faster fade
                         if (e.life <= 0) {
                             entities.splice(i, 1)
                             continue
@@ -241,10 +277,10 @@ export function SpaceWallpaper() {
                 }
             }
 
-            animationFrameId = requestAnimationFrame((t) => update(t))
+            animationFrameId = requestAnimationFrame(update)
         }
 
-        animationFrameId = requestAnimationFrame((t) => update(t))
+        animationFrameId = requestAnimationFrame(update)
 
         return () => {
             window.removeEventListener('resize', resize)
