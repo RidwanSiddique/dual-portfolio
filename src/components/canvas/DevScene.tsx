@@ -4,6 +4,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls, Float, Text, Environment, Html } from '@react-three/drei'
 import { useRef, useState, useEffect, useMemo } from 'react'
 import * as THREE from 'three'
+import { getTechIcon } from '../../utils/techIcons'
 
 interface Project {
     id: string
@@ -256,8 +257,20 @@ function TerminalCard({ position, project, color, onClick }: TerminalCardProps) 
                         <div style={{
                             fontSize: '11px',
                             color: '#00f0ff',
+                            display: 'flex',
+                            gap: '8px',
+                            justifyContent: 'center',
+                            marginTop: '8px',
                         }}>
-                            Tech: {project.techStack.slice(0, 3).join(', ')}
+                            {project.techStack.slice(0, 5).map((tech) => (
+                                <img
+                                    key={tech}
+                                    src={getTechIcon(tech)}
+                                    alt={tech}
+                                    style={{ width: '16px', height: '16px' }}
+                                    title={tech}
+                                />
+                            ))}
                         </div>
                         {hovered && (
                             <div style={{

@@ -51,6 +51,9 @@ export function SpaceWallpaper() {
             loadedImages[tech.name] = img
         })
 
+        const spaceshipImage = new Image()
+        spaceshipImage.src = '/assets/spaceship_sprite.png'
+
         // Game State
         const spaceship = {
             x: window.innerWidth / 2,
@@ -104,80 +107,7 @@ export function SpaceWallpaper() {
             }
         }
 
-        // Draw Spaceship Function
-        const drawSpaceship = (x: number, y: number) => {
-            ctx.save()
-            ctx.translate(x, y)
 
-            // Dynamic Engine Flame
-            spaceship.flameHeight = 10 + Math.random() * 10
-
-            // Engine Flames
-            ctx.fillStyle = '#ff6600' // Inner core
-            ctx.beginPath()
-            ctx.moveTo(-8, 30)
-            ctx.lineTo(0, 30 + spaceship.flameHeight)
-            ctx.lineTo(8, 30)
-            ctx.fill()
-
-            ctx.fillStyle = '#ffff00' // Outer glow
-            ctx.beginPath()
-            ctx.moveTo(-5, 30)
-            ctx.lineTo(0, 30 + spaceship.flameHeight * 0.6)
-            ctx.lineTo(5, 30)
-            ctx.fill()
-
-            // Main Fuselage (Dark Grey Body)
-            ctx.fillStyle = '#222'
-            ctx.beginPath()
-            ctx.moveTo(0, -30) // Nose
-            ctx.lineTo(15, 10) // Right body
-            ctx.lineTo(10, 30) // Right engine mount
-            ctx.lineTo(-10, 30) // Left engine mount
-            ctx.lineTo(-15, 10) // Left body
-            ctx.closePath()
-            ctx.fill()
-
-            // Cockpit (Blue Glass)
-            ctx.fillStyle = '#00f0ff'
-            ctx.beginPath()
-            ctx.ellipse(0, -5, 6, 12, 0, 0, Math.PI * 2)
-            ctx.fill()
-
-            // Wings (Cyber Style)
-            ctx.fillStyle = '#333'
-            ctx.beginPath()
-            ctx.moveTo(10, 0)
-            ctx.lineTo(35, 25) // Wing tip
-            ctx.lineTo(15, 25)
-            ctx.closePath()
-            ctx.fill()
-
-            ctx.beginPath()
-            ctx.moveTo(-10, 0)
-            ctx.lineTo(-35, 25) // Wing tip
-            ctx.lineTo(-15, 25)
-            ctx.closePath()
-            ctx.fill()
-
-            // Detail Lines (Neon Strips)
-            ctx.strokeStyle = '#ff00aa'
-            ctx.lineWidth = 2
-            ctx.beginPath()
-            ctx.moveTo(0, -30)
-            ctx.lineTo(0, -17)
-            ctx.stroke()
-
-            ctx.strokeStyle = '#00f0ff'
-            ctx.beginPath()
-            ctx.moveTo(35, 25)
-            ctx.lineTo(15, 25)
-            ctx.moveTo(-35, 25)
-            ctx.lineTo(-15, 25)
-            ctx.stroke()
-
-            ctx.restore()
-        }
 
         // Game Loop
         const update = (time: number) => {
@@ -190,14 +120,35 @@ export function SpaceWallpaper() {
             }
             spaceship.x += (spaceship.targetX - spaceship.x) * 0.05
 
-            // Draw Detailed Spaceship
-            drawSpaceship(spaceship.x, spaceship.y)
+            // Draw Detailed Spaceship Image
+            if (spaceshipImage.complete) {
+                ctx.save()
+                ctx.translate(spaceship.x, spaceship.y)
+                // Add subtle banking effect
+                const bank = (spaceship.targetX - spaceship.x) * 0.02
+                ctx.rotate(bank * 0.05)
+
+                // Draw engine glow
+                ctx.globalCompositeOperation = 'screen'
+                const glowSize = 10 + Math.random() * 5
+                ctx.fillStyle = '#00f0ff'
+                ctx.globalAlpha = 0.4
+                ctx.beginPath()
+                ctx.arc(0, 25, 20 + glowSize, 0, Math.PI * 2)
+                ctx.fill()
+                ctx.globalAlpha = 1.0
+                ctx.globalCompositeOperation = 'source-over'
+
+                // Draw ship
+                ctx.drawImage(spaceshipImage, -40, -40, 80, 80)
+                ctx.restore()
+            }
 
             // Fire Logic
             if (time - spaceship.lastFired > 250) { // Faster fire rate
                 entities.push({
                     x: spaceship.x, // Center
-                    y: spaceship.y - 30, // Nose
+                    y: spaceship.y - 40, // Nose
                     vx: 0,
                     vy: -12, // Faster bullets
                     width: 4,
@@ -207,8 +158,8 @@ export function SpaceWallpaper() {
                 })
                 // Side cannons occasionally
                 if (Math.random() > 0.7) {
-                    entities.push({ x: spaceship.x - 25, y: spaceship.y + 10, vx: -1, vy: -10, width: 3, height: 10, color: '#ff00aa', type: 'bullet' })
-                    entities.push({ x: spaceship.x + 25, y: spaceship.y + 10, vx: 1, vy: -10, width: 3, height: 10, color: '#ff00aa', type: 'bullet' })
+                    entities.push({ x: spaceship.x - 25, y: spaceship.y - 10, vx: -1, vy: -10, width: 3, height: 10, color: '#ff00aa', type: 'bullet' })
+                    entities.push({ x: spaceship.x + 25, y: spaceship.y - 10, vx: 1, vy: -10, width: 3, height: 10, color: '#ff00aa', type: 'bullet' })
                 }
 
                 spaceship.lastFired = time

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { getTechIcon } from '../../utils/techIcons'
 
 interface TerminalWindowProps {
     project: {
@@ -44,7 +45,7 @@ export function TerminalWindow({ project, onClose, zIndex, onFocus }: TerminalWi
                 style={{
                     width: '700px',
                     maxWidth: '90vw',
-                    background: 'rgba(30, 30, 30, 0.95)',
+                    background: 'rgba(30, 30, 30, 0.75)',
                     borderRadius: '12px',
                     overflow: 'hidden',
                     boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)',
@@ -141,10 +142,15 @@ export function TerminalWindow({ project, onClose, zIndex, onFocus }: TerminalWi
                         <span style={{ color: '#00f0ff' }}>{'>'}</span>{' '}
                         <span style={{ color: '#fff' }}>tech_stack:</span>
                     </div>
-                    <div style={{ marginLeft: '20px', marginBottom: '15px' }}>
+                    <div style={{ marginLeft: '20px', marginBottom: '15px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                         {project.techStack.map((tech, i) => (
-                            <div key={i} style={{ color: '#ffff00' }}>
-                                - {tech}
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.1)', padding: '4px 8px', borderRadius: '4px' }}>
+                                <img
+                                    src={getTechIcon(tech)}
+                                    alt={tech}
+                                    style={{ width: '16px', height: '16px' }}
+                                />
+                                <span style={{ color: '#ffff00', fontSize: '12px' }}>{tech}</span>
                             </div>
                         ))}
                     </div>
