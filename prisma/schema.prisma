@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  bio         String?
+  email       String   @unique
+  githubUrl   String?
+  linkedinUrl String?
+  projects    Project[]
+  photos      Photo[]
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  techStack   String[]
+  demoUrl     String?
+  repoUrl     String?
+  imageUrl    String?
+  profileId   String?
+  profile     Profile? @relation(fields: [profileId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Photo {
+  id          String   @id @default(cuid())
+  url         String
+  title       String
+  width       Int
+  height      Int
+  profileId   String?
+  profile     Profile? @relation(fields: [profileId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Preset {
+  id          String   @id @default(cuid())
+  name        String
+  config      Json     // Stores shader configuration or slider values
+}
