@@ -320,6 +320,7 @@ function TechOrbit({ index, total, color }: { index: number; total: number; colo
 export function DevScene() {
     const [projects, setProjects] = useState<Project[]>([])
     const [loading, setLoading] = useState(true)
+    const [visibleCount, setVisibleCount] = useState(4)
 
     useEffect(() => {
         fetch('/api/projects')
@@ -344,14 +345,20 @@ export function DevScene() {
         'npm run dev\n> Building...\n> Ready! ✓',
     ]
 
-    // Calculate positions in a 3D spiral layout
-    const getPosition = (index: number, total: number): [number, number, number] => {
-        const radius = 10
-        const angle = (index / total) * Math.PI * 2
-        const x = Math.cos(angle) * radius
-        const z = Math.sin(angle) * radius
-        const y = Math.sin(index) * 2
+    // Calculate positions in a vertical list layout
+    const getPosition = (index: number): [number, number, number] => {
+        const x = 0 // Centered horizontally
+        const y = 5 - (index * 4) // Stack vertically, 4 units apart
+        const z = -5 // Fixed distance from camera
         return [x, y, z]
+    }
+
+    const showMore = () => {
+        setVisibleCount(prev => Math.min(prev + 4, projects.length))
+    }
+
+    const showLess = () => {
+        setVisibleCount(4)
     }
 
     if (loading) {
@@ -366,7 +373,7 @@ export function DevScene() {
 
     return (
         <div style={{ width: '100%', height: 'calc(100vh - 100px)', background: '#000' }}>
-            <Canvas camera={{ position: [0, 5, 25], fov: 60 }}>
+            <Canvas camera={{ position: [0, 3, 15], fov: 60 }}>
                 <color attach="background" args={['#000000']} />
                 <fog attach="fog" args={['#000000', 10, 50]} />
 
@@ -394,10 +401,10 @@ export function DevScene() {
                 ))}
 
                 {/* Project terminal cards */}
-                {projects.map((project, index) => (
+                {projects.slice(0, visibleCount).map((project, index) => (
                     <TerminalCard
                         key={project.id}
-                        position={getPosition(index, projects.length)}
+                        position={getPosition(index)}
                         project={project}
                         color={colors[index % colors.length]}
                         onClick={() => {
@@ -412,12 +419,56 @@ export function DevScene() {
                     />
                 ))}
 
+                {/* Show More / Show Less buttons */}
+                {projects.length > 4 && (
+                    <Html position={[0, 5 - (visibleCount * 4) - 2, -5]} center>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            {visibleCount < projects.length && (
+                                <button
+                                    onClick={showMore}
+                                    style={{
+                                        padding: '10px 20px',
+                                        background: '#00f0ff',
+                                        color: '#000',
+                                        border: 'none',
+                                        borderRadius: '5px',
+                                        cursor: 'pointer',
+                                        fontFamily: 'monospace',
+                                        fontSize: '14px',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    SHOW MORE ({projects.length - visibleCount} more)
+                                </button>
+                            )}
+                            {visibleCount > 4 && (
+                                <button
+                                    onClick={showLess}
+                                    style={{
+                                        padding: '10px 20px',
+                                        background: '#ff00aa',
+                                        color: '#fff',
+                                        border: 'none',
+                                        borderRadius: '5px',
+                                        cursor: 'pointer',
+                                        fontFamily: 'monospace',
+                                        fontSize: '14px',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    SHOW LESS
+                                </button>
+                            )}
+                        </div>
+                    </Html>
+                )}
+
                 <OrbitControls
                     enableZoom={true}
-                    autoRotate
-                    autoRotateSpeed={0.3}
-                    maxDistance={40}
-                    minDistance={10}
+                    maxDistance={30}
+                    minDistance={5}
+                    maxPolarAngle={Math.PI / 2}
+                    target={[0, 0, -5]}
                 />
             </Canvas>
         </div>
