@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { Dock } from './Dock'
 import { TerminalWindow } from './TerminalWindow'
+import { SpaceWallpaper } from './SpaceWallpaper'
 
 interface Project {
     id: string
@@ -17,6 +18,7 @@ interface Project {
 
 export function DesktopUI() {
     const [projects, setProjects] = useState<Project[]>([])
+    // ... existing code ...
     const [loading, setLoading] = useState(true)
     const [openWindows, setOpenWindows] = useState<Project[]>([])
     const [windowZIndices, setWindowZIndices] = useState<Record<string, number>>({})
@@ -89,7 +91,10 @@ export function DesktopUI() {
                 overflow: 'hidden',
             }}
         >
-            {/* Desktop Background Pattern */}
+            {/* Space Battle Background */}
+            <SpaceWallpaper />
+
+            {/* Desktop Background Pattern (Optional overlay) */}
             <div
                 style={{
                     position: 'absolute',
