@@ -23,8 +23,8 @@ export function TerminalLandingWindow() {
     return (
         <MacWindow
             title="Terminal — User: ridwan"
-            width={500}
-            height={320}
+            width={1000}
+            height={800}
             x="10%"
             y="20%"
             onClick={() => router.push('/developer')}

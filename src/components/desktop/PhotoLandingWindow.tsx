@@ -10,8 +10,8 @@ export function PhotoLandingWindow() {
     return (
         <MacWindow
             title="Gallery Viewer"
-            width={500}
-            height={320}
+            width={1000}
+            height={800}
             x="50%"
             y="30%"
             onClick={() => router.push('/photographer')}

@@ -40,7 +40,7 @@ export function Navbar() {
                 left: 0,
                 width: '100%',
                 zIndex: 1000,
-                height: '32px',
+                height: '40px',
                 background: 'rgba(20, 20, 20, 0.4)',
                 backdropFilter: 'blur(15px)',
                 WebkitBackdropFilter: 'blur(15px)',
@@ -48,7 +48,7 @@ export function Navbar() {
                 display: 'flex',
                 alignItems: 'center',
                 padding: '0 20px',
-                fontSize: '13px',
+                fontSize: '20px',
                 fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                 fontWeight: 500,
                 color: '#fff',
@@ -59,7 +59,6 @@ export function Navbar() {
             {/* Left Side: Logo & Name */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flex: 1 }}>
                 <Link href="/" style={{ textDecoration: 'none', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '18px' }}></span>
                     <span style={{ fontWeight: 700 }}>Ridwan Siddique</span>
                 </Link>
 
@@ -85,9 +84,6 @@ export function Navbar() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                 {/* Status Icons (Mock) */}
                 <div style={{ display: 'flex', gap: '15px', opacity: 0.9 }}>
-                    <span>🔋 100%</span>
-                    <span>WIFI</span>
-                    <span>🔍</span>
                 </div>
                 <span>{time}</span>
             </div>

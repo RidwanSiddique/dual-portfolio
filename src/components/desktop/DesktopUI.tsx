@@ -140,7 +140,6 @@ export function DesktopUI() {
                     fontWeight: '500',
                 }}
             >
-                <div style={{ marginRight: '20px' }}>🍎</div>
                 <div style={{ marginRight: '20px' }}>Developer Portfolio</div>
                 <div style={{ flex: 1 }} />
                 <div>{new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
