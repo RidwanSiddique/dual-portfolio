@@ -16,10 +16,11 @@ interface TerminalWindowProps {
     onClose: () => void
     zIndex: number
     onFocus: () => void
+    initialPosition?: { x: number; y: number }
 }
 
-export function TerminalWindow({ project, onClose, zIndex, onFocus }: TerminalWindowProps) {
-    const [position, setPosition] = useState({ x: 100, y: 50 })
+export function TerminalWindow({ project, onClose, zIndex, onFocus, initialPosition }: TerminalWindowProps) {
+    const [position, setPosition] = useState(initialPosition || { x: 100, y: 50 })
     const [isDragging, setIsDragging] = useState(false)
 
     return (

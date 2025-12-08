@@ -52,7 +52,7 @@ export function SpaceWallpaper() {
         })
 
         const spaceshipImage = new Image()
-        spaceshipImage.src = '/assets/spaceship_sprite_v2.png'
+        spaceshipImage.src = '/assets/spaceship_sprite_v3.png'
 
         // Game State
         const spaceship = {

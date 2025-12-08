@@ -20,7 +20,7 @@ export function DesktopUI() {
     const [projects, setProjects] = useState<Project[]>([])
     // ... existing code ...
     const [loading, setLoading] = useState(true)
-    const [openWindows, setOpenWindows] = useState<Project[]>([])
+    const [openWindows, setOpenWindows] = useState<{ id: string; project: Project; x: number; y: number }[]>([])
     const [windowZIndices, setWindowZIndices] = useState<Record<string, number>>({})
     const [maxZIndex, setMaxZIndex] = useState(100)
 
@@ -41,7 +41,17 @@ export function DesktopUI() {
         // Check if window is already open
         const isOpen = openWindows.some(w => w.id === project.id)
         if (!isOpen) {
-            setOpenWindows([...openWindows, project])
+            // Random position with some constraints to keep it on screen
+            // x: 50 to window.innerWidth - 750 (approx width)
+            // y: 50 to window.innerHeight - 500 (approx height)
+            // Using a safe default range if window is not available yet (SSR)
+            const maxX = typeof window !== 'undefined' ? window.innerWidth - 750 : 500
+            const maxY = typeof window !== 'undefined' ? window.innerHeight - 500 : 300
+
+            const x = 50 + Math.random() * Math.max(100, maxX - 50)
+            const y = 50 + Math.random() * Math.max(100, maxY - 50)
+
+            setOpenWindows([...openWindows, { id: project.id, project, x, y }])
             setWindowZIndices({ ...windowZIndices, [project.id]: maxZIndex + 1 })
             setMaxZIndex(maxZIndex + 1)
         } else {
@@ -148,13 +158,14 @@ export function DesktopUI() {
                 }}
             >
                 <AnimatePresence>
-                    {openWindows.map(project => (
+                    {openWindows.map(w => (
                         <TerminalWindow
-                            key={project.id}
-                            project={project}
-                            onClose={() => handleWindowClose(project.id)}
-                            zIndex={windowZIndices[project.id] || 100}
-                            onFocus={() => handleWindowFocus(project.id)}
+                            key={w.id}
+                            project={w.project}
+                            onClose={() => handleWindowClose(w.id)}
+                            zIndex={windowZIndices[w.id] || 100}
+                            onFocus={() => handleWindowFocus(w.id)}
+                            initialPosition={{ x: w.x, y: w.y }}
                         />
                     ))}
                 </AnimatePresence>
