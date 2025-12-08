@@ -151,7 +151,6 @@ function CodeBlock({ position, code }: { position: [number, number, number]; cod
                     color="#00ff88"
                     anchorX="center"
                     anchorY="middle"
-                    font="/fonts/monospace.woff"
                     maxWidth={2.8}
                 >
                     {code}
@@ -221,57 +220,57 @@ function TerminalCard({ position, project, color, onClick }: TerminalCardProps) 
                     />
                 </mesh>
 
-                {/* Project title */}
-                <Text
-                    position={[0, 1.35, 0.08]}
-                    fontSize={0.2}
-                    color="#ffffff"
-                    anchorX="center"
-                    anchorY="middle"
-                    font="/fonts/monospace.woff"
+                {/* HTML overlay for text content */}
+                <Html
+                    position={[0, 0, 0.1]}
+                    center
+                    distanceFactor={10}
+                    style={{
+                        width: '350px',
+                        pointerEvents: 'none',
+                        userSelect: 'none',
+                    }}
                 >
-                    {`> ${project.title}`}
-                </Text>
-
-                {/* Project description */}
-                <Text
-                    position={[0, 0.5, 0.06]}
-                    fontSize={0.15}
-                    color="#00ff88"
-                    anchorX="center"
-                    anchorY="middle"
-                    maxWidth={3.5}
-                    font="/fonts/monospace.woff"
-                >
-                    {project.description.substring(0, 100)}
-                </Text>
-
-                {/* Tech stack */}
-                <Text
-                    position={[0, -0.5, 0.06]}
-                    fontSize={0.12}
-                    color="#00f0ff"
-                    anchorX="center"
-                    anchorY="middle"
-                    maxWidth={3.5}
-                    font="/fonts/monospace.woff"
-                >
-                    {`Tech: ${project.techStack.slice(0, 3).join(', ')}`}
-                </Text>
-
-                {/* Click prompt */}
-                {hovered && (
-                    <Text
-                        position={[0, -1.2, 0.06]}
-                        fontSize={0.15}
-                        color="#ffff00"
-                        anchorX="center"
-                        anchorY="middle"
-                        font="/fonts/monospace.woff"
-                    >
-                        {'[ CLICK TO VIEW ]'}
-                    </Text>
-                )}
+                    <div style={{
+                        fontFamily: 'monospace',
+                        color: '#fff',
+                        textAlign: 'center',
+                        padding: '10px',
+                    }}>
+                        <div style={{
+                            fontSize: '18px',
+                            fontWeight: 'bold',
+                            marginBottom: '10px',
+                            color: '#ffffff',
+                        }}>
+                            {`> ${project.title}`}
+                        </div>
+                        <div style={{
+                            fontSize: '13px',
+                            color: '#00ff88',
+                            marginBottom: '8px',
+                            lineHeight: '1.4',
+                        }}>
+                            {project.description.substring(0, 100)}...
+                        </div>
+                        <div style={{
+                            fontSize: '11px',
+                            color: '#00f0ff',
+                        }}>
+                            Tech: {project.techStack.slice(0, 3).join(', ')}
+                        </div>
+                        {hovered && (
+                            <div style={{
+                                fontSize: '14px',
+                                color: '#ffff00',
+                                marginTop: '10px',
+                                fontWeight: 'bold',
+                            }}>
+                                [ CLICK TO VIEW ]
+                            </div>
+                        )}
+                    </div>
+                </Html>
 
                 {/* Invisible clickable area */}
                 <mesh
