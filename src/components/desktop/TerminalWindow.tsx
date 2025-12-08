@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { getTechIcon } from '../../utils/techIcons'
 
 interface TerminalWindowProps {
@@ -19,7 +19,7 @@ interface TerminalWindowProps {
     initialPosition?: { x: number; y: number }
 }
 
-export function TerminalWindow({ project, onClose, zIndex, onFocus, initialPosition }: TerminalWindowProps) {
+export const TerminalWindow = memo(function TerminalWindow({ project, onClose, zIndex, onFocus, initialPosition }: TerminalWindowProps) {
     const [position, setPosition] = useState(initialPosition || { x: 100, y: 50 })
     const [isDragging, setIsDragging] = useState(false)
 
@@ -40,6 +40,7 @@ export function TerminalWindow({ project, onClose, zIndex, onFocus, initialPosit
                 top: position.y,
                 zIndex,
                 cursor: isDragging ? 'grabbing' : 'grab',
+                willChange: 'transform',
             }}
         >
             <div
@@ -207,3 +208,4 @@ export function TerminalWindow({ project, onClose, zIndex, onFocus, initialPosit
         </motion.div>
     )
 }
+)
