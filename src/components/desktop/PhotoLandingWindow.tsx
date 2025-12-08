@@ -3,11 +3,12 @@
 import { useRouter } from 'next/navigation'
 import { MacWindow } from './MacWindow'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export function PhotoLandingWindow() {
     const router = useRouter()
     const [currentIndex, setCurrentIndex] = useState(0)
+    const [isHovered, setIsHovered] = useState(false)
 
     // Mock images (gradients)
     const images = [
@@ -18,6 +19,20 @@ export function PhotoLandingWindow() {
         'linear-gradient(to top, #30cfd0 0%, #330867 100%)',
         'linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%)',
     ]
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout
+
+        if (!isHovered) {
+            interval = setInterval(() => {
+                setCurrentIndex((prev) => (prev + 1) % images.length)
+            }, 3000) // Change image every 3 seconds
+        } else {
+            setCurrentIndex(0) // Reset to first image on hover
+        }
+
+        return () => clearInterval(interval)
+    }, [isHovered, images.length])
 
     const nextImage = (e?: React.MouseEvent) => {
         e?.stopPropagation()
@@ -38,6 +53,8 @@ export function PhotoLandingWindow() {
             y="30%"
             // Removed global onClick navigation
             style={{ cursor: 'default', background: '#222', overflow: 'hidden' }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
         >
             <div
                 className="photo-window-container"

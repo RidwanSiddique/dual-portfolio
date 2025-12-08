@@ -14,9 +14,11 @@ interface MacWindowProps {
     className?: string
     style?: React.CSSProperties
     onClick?: () => void
+    onMouseEnter?: () => void
+    onMouseLeave?: () => void
 }
 
-export function MacWindow({ title, children, onClose, width = 600, height = 400, x = 0, y = 0, className, style, onClick }: MacWindowProps) {
+export function MacWindow({ title, children, onClose, width = 600, height = 400, x = 0, y = 0, className, style, onClick, onMouseEnter, onMouseLeave }: MacWindowProps) {
     return (
         <motion.div
             className={className}
@@ -43,6 +45,8 @@ export function MacWindow({ title, children, onClose, width = 600, height = 400,
                 ...style
             }}
             onClick={onClick}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
         >
             {/* Title Bar */}
             <div style={{
