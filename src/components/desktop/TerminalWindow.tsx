@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { useState, memo, useEffect } from 'react'
+import { useState, memo, useEffect, useRef } from 'react'
 import { getTechIcon } from '../../utils/techIcons'
 
 interface TerminalWindowProps {
@@ -20,19 +20,27 @@ interface TerminalWindowProps {
 // Helper for typing effect
 const TypewriterText = ({ text, onComplete, color = '#fff', speed = 20 }: { text: string, onComplete?: () => void, color?: string, speed?: number }) => {
     const [displayedText, setDisplayedText] = useState('')
+    const onCompleteRef = useRef(onComplete)
+
+    useEffect(() => {
+        onCompleteRef.current = onComplete
+    }, [onComplete])
 
     useEffect(() => {
         let index = 0
+        setDisplayedText('')
         const interval = setInterval(() => {
             setDisplayedText(text.slice(0, index + 1))
             index++
             if (index >= text.length) {
                 clearInterval(interval)
-                onComplete && onComplete()
+                if (onCompleteRef.current) {
+                    onCompleteRef.current()
+                }
             }
         }, speed)
         return () => clearInterval(interval)
-    }, [text, speed, onComplete])
+    }, [text, speed])
 
     return <span style={{ color }}>{displayedText}</span>
 }
