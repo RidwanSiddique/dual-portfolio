@@ -5,36 +5,39 @@ import { MacWindow } from './MacWindow'
 import { motion } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
 
+const bootSequence = [
+    "Welcome to RidwanOS v2.0-LTS (GNU/Linux 5.15.0-76-generic x86_64)",
+    "",
+    " * Documentation:  https://github.com/RidwanSiddique",
+    " * Management:     https://linkedin.com/in/RidwanSiddique",
+    " * Support:        ridwan@example.com",
+    "",
+    "System functionality status:",
+    " [ OK ]  Core Kernel Modules loaded.",
+    " [ OK ]  React Framework initialized.",
+    " [ OK ]  Next.js Runtime Environment ready.",
+    " [ OK ]  Creative Engines... ONLINE.",
+    "",
+    "0 packages can be updated.",
+    "0 updates are security updates.",
+    "",
+    "ridwan@portfolio:~$ "
+]
+
 export function TerminalLandingWindow() {
     const router = useRouter()
     const [lines, setLines] = useState<string[]>([])
     const [showButton, setShowButton] = useState(false)
     const endRef = useRef<HTMLDivElement>(null)
 
-    const bootSequence = [
-        "Welcome to RidwanOS v2.0-LTS (GNU/Linux 5.15.0-76-generic x86_64)",
-        "",
-        " * Documentation:  https://github.com/RidwanSiddique",
-        " * Management:     https://linkedin.com/in/RidwanSiddique",
-        " * Support:        ridwan@example.com",
-        "",
-        "System functionality status:",
-        " [ OK ]  Core Kernel Modules loaded.",
-        " [ OK ]  React Framework initialized.",
-        " [ OK ]  Next.js Runtime Environment ready.",
-        " [ OK ]  Creative Engines... ONLINE.",
-        "",
-        "0 packages can be updated.",
-        "0 updates are security updates.",
-        "",
-        "ridwan@portfolio:~$ "
-    ]
-
     useEffect(() => {
         let lineIndex = 0
         const interval = setInterval(() => {
             if (lineIndex < bootSequence.length) {
-                setLines(prev => [...prev, bootSequence[lineIndex]])
+                const nextLine = bootSequence[lineIndex]
+                if (nextLine !== undefined) {
+                    setLines(prev => [...prev, nextLine])
+                }
                 lineIndex++
             } else {
                 clearInterval(interval)
@@ -74,7 +77,7 @@ export function TerminalLandingWindow() {
                 <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '80px' }}>
                     {lines.map((line, i) => (
                         <div key={i} style={{ whiteSpace: 'pre-wrap', minHeight: '1.2em' }}>
-                            {line.startsWith(" [ OK ]") ? (
+                            {line && line.startsWith(" [ OK ]") ? (
                                 <span>
                                     <span style={{ color: '#00ff00' }}>[ OK ]</span>{line.substring(7)}
                                 </span>
@@ -87,7 +90,7 @@ export function TerminalLandingWindow() {
                                     />
                                 </span>
                             ) : (
-                                line
+                                line || ''
                             )}
                         </div>
                     ))}
