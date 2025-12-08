@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, Float, Text, Environment } from '@react-three/drei'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import * as THREE from 'three'
 import { useRouter } from 'next/navigation'
 
@@ -12,6 +12,16 @@ interface ProjectProps {
     color: string
     label: string
     onClick: () => void
+}
+
+interface Project {
+    id: string
+    title: string
+    description: string
+    techStack: string[]
+    demoUrl?: string
+    repoUrl?: string
+    imageUrl?: string
 }
 
 function ProjectOrb({ position, color, label, onClick }: ProjectProps) {
@@ -59,34 +69,66 @@ function ProjectOrb({ position, color, label, onClick }: ProjectProps) {
 
 export function DevScene() {
     const router = useRouter()
+    const [projects, setProjects] = useState<Project[]>([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        fetch('/api/projects')
+            .then(res => res.json())
+            .then(data => {
+                setProjects(data)
+                setLoading(false)
+            })
+            .catch(err => {
+                console.error('Failed to fetch projects:', err)
+                setLoading(false)
+            })
+    }, [])
+
+    // Generate colors for projects
+    const colors = ['#00f0ff', '#ff00aa', '#ffff00', '#00ff88', '#ff6600', '#aa00ff', '#ff0055', '#00aaff']
+
+    // Calculate positions in a circular layout
+    const getPosition = (index: number, total: number): [number, number, number] => {
+        const radius = 8
+        const angle = (index / total) * Math.PI * 2
+        const x = Math.cos(angle) * radius
+        const z = Math.sin(angle) * radius
+        return [x, 0, z]
+    }
+
+    if (loading) {
+        return (
+            <div style={{ width: '100%', height: 'calc(100vh - 100px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <p style={{ color: 'white', fontSize: '1.5rem' }}>Loading projects...</p>
+            </div>
+        )
+    }
 
     return (
         <div style={{ width: '100%', height: 'calc(100vh - 100px)' }}>
-            <Canvas camera={{ position: [0, 0, 15] }}>
+            <Canvas camera={{ position: [0, 5, 20] }}>
                 <Environment preset="city" />
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} intensity={1} />
 
-                <ProjectOrb
-                    position={[-6, 0, 0]}
-                    color="#00f0ff"
-                    label="E-Commerce API"
-                    onClick={() => alert('View Project: E-Commerce')}
-                />
-                <ProjectOrb
-                    position={[0, 0, 0]}
-                    color="#ff00aa"
-                    label="AI Chatbot"
-                    onClick={() => alert('View Project: AI Chatbot')}
-                />
-                <ProjectOrb
-                    position={[6, 0, 0]}
-                    color="#ffff00"
-                    label="SaaS Dashboard"
-                    onClick={() => alert('View Project: SaaS')}
-                />
+                {projects.map((project, index) => (
+                    <ProjectOrb
+                        key={project.id}
+                        position={getPosition(index, projects.length)}
+                        color={colors[index % colors.length]}
+                        label={project.title}
+                        onClick={() => {
+                            if (project.demoUrl) {
+                                window.open(project.demoUrl, '_blank')
+                            } else {
+                                alert(`Project: ${project.title}\n\n${project.description}\n\nTech: ${project.techStack.join(', ')}`)
+                            }
+                        }}
+                    />
+                ))}
 
-                <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} />
+                <OrbitControls enableZoom={true} autoRotate autoRotateSpeed={0.5} />
             </Canvas>
         </div>
     )
