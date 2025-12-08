@@ -77,23 +77,22 @@ export function Dock({ projects, onProjectClick }: DockProps) {
                                     style={{
                                         position: 'absolute',
                                         bottom: '100%',
-                                        marginBottom: '10px',
+                                        marginBottom: '15px',
                                         background: 'rgba(0, 0, 0, 0.9)',
                                         color: '#fff',
-                                        padding: '8px 12px',
-                                        borderRadius: '8px',
+                                        padding: '6px 10px',
+                                        borderRadius: '6px',
                                         fontSize: '12px',
                                         whiteSpace: 'nowrap',
                                         fontFamily: 'monospace',
                                         border: `1px solid ${colors[index % colors.length]}`,
                                         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+                                        zIndex: 2000,
+                                        pointerEvents: 'none',
                                     }}
                                 >
-                                    <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+                                    <div style={{ fontWeight: 'bold' }}>
                                         {project.title}
-                                    </div>
-                                    <div style={{ fontSize: '10px', color: '#aaa', maxWidth: '200px' }}>
-                                        {project.description.substring(0, 60)}...
                                     </div>
                                 </motion.div>
                             )}
