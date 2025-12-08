@@ -1,101 +1,87 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import styles from '@/app/page.module.css'
-import clsx from 'clsx'
+import { SpaceWallpaper } from './desktop/SpaceWallpaper'
+import { TerminalLandingWindow } from './desktop/TerminalLandingWindow'
+import { PhotoLandingWindow } from './desktop/PhotoLandingWindow'
 import { motion } from 'framer-motion'
-import { CodeRain } from './ui/CodeRain'
-import { BokehParticles } from './ui/BokehParticles'
+import { useState, useEffect } from 'react'
 
 export function LandingPage() {
-    const router = useRouter()
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [expanded, setExpanded] = useState<'left' | 'right' | null>(null)
+    const [isMounted, setIsMounted] = useState(false)
 
-    const handleNavigate = (side: 'left' | 'right') => {
-        setExpanded(side)
-        // Future: Add exit animation trigger here
-        setTimeout(() => {
-            router.push(side === 'left' ? '/developer' : '/photographer')
-        }, 500)
-    }
+    useEffect(() => {
+        setIsMounted(true)
+    }, [])
+
+    if (!isMounted) return null
 
     return (
-        <div className={styles.container}>
+        <div style={{
+            width: '100vw',
+            height: '100vh',
+            overflow: 'hidden',
+            position: 'relative',
+            background: '#000',
+        }}>
+            {/* Background */}
+            <SpaceWallpaper />
+
+            {/* Desktop Gradient Overlay */}
             <div
-                className={clsx(styles.split, styles.left)}
-                onClick={() => handleNavigate('left')}
-                role="button"
-                tabIndex={0}
-            >
-                {/* Background Animation */}
-                <div className={styles.backgroundCanvas}>
-                    <CodeRain />
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundImage: `
+                        radial-gradient(circle at 50% 50%, rgba(20, 20, 30, 0.4) 0%, rgba(0,0,0,0.8) 100%)
+                    `,
+                    pointerEvents: 'none',
+                }}
+            />
+
+            {/* Application Windows */}
+            <div style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: 'none' }}>
+                {/* Pointer events auto on windows so they are clickable */}
+                <div style={{ pointerEvents: 'auto' }}>
+                    <TerminalLandingWindow />
                 </div>
 
-                {/* Overlay Gradient for readability */}
-                <div style={{
-                    position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, #000 100%)', opacity: 0.6, pointerEvents: 'none'
-                }} />
-
-                <div className={styles.content}>
-                    <motion.h1
-                        className={styles.title}
-                        initial={{ y: 0, opacity: 0, scale: 0.9 }}
-                        animate={{ y: 0, opacity: 1, scale: 1 }}
-                        whileHover={{ scale: 1.1, textShadow: "0 0 20px #00f0ff" }}
-                        transition={{ delay: 0.2, type: 'spring' }}
-                    >
-                        Developer
-                    </motion.h1>
-                    <motion.div
-                        className={styles.subtitle}
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.4 }}
-                    >
-                        The Architect
-                    </motion.div>
+                <div style={{ pointerEvents: 'auto' }}>
+                    <PhotoLandingWindow />
                 </div>
             </div>
 
-            <div
-                className={clsx(styles.split, styles.right)}
-                onClick={() => handleNavigate('right')}
-                role="button"
-                tabIndex={0}
+            {/* Desktop Icons (Optional decorative elements) */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+                style={{
+                    position: 'absolute',
+                    right: '30px',
+                    top: '60px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '20px',
+                    alignItems: 'center',
+                    pointerEvents: 'none' // Just visual for now
+                }}
             >
-                {/* Background Animation */}
-                <div className={styles.backgroundCanvas}>
-                    <BokehParticles />
-                </div>
+                {['Macintosh HD', 'Projects', 'Camera Roll'].map((name, i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+                        <div style={{ width: 48, height: 48, background: '#ccc', borderRadius: '8px', opacity: 0.8 }}></div>
+                        <span style={{
+                            color: '#fff',
+                            fontSize: '12px',
+                            textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+                            fontWeight: 500
+                        }}>{name}</span>
+                    </div>
+                ))}
+            </motion.div>
 
-                {/* Overlay Gradient for readability */}
-                <div style={{
-                    position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, #000 40%)', opacity: 0.3, pointerEvents: 'none'
-                }} />
-
-                <div className={styles.content}>
-                    <motion.h1
-                        className={styles.title}
-                        initial={{ y: 0, opacity: 0, scale: 0.9 }}
-                        animate={{ y: 0, opacity: 1, scale: 1 }}
-                        whileHover={{ scale: 1.1, textShadow: "0 0 20px #ff00aa" }}
-                        transition={{ delay: 0.3, type: 'spring' }}
-                    >
-                        Photographer
-                    </motion.h1>
-                    <motion.div
-                        className={styles.subtitle}
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.5 }}
-                    >
-                        The Artist
-                    </motion.div>
-                </div>
-            </div>
         </div>
     )
 }

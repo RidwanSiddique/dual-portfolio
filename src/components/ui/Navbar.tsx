@@ -3,11 +3,24 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export function Navbar() {
     const pathname = usePathname()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isHovered, setIsHovered] = useState<string | null>(null)
+    const [time, setTime] = useState<string>('')
+
+    useEffect(() => {
+        // Initial set
+        const updateTime = () => {
+            const now = new Date()
+            setTime(now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + '  ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }))
+        }
+        updateTime()
+        const interval = setInterval(updateTime, 1000)
+        return () => clearInterval(interval)
+    }, [])
 
     const links = [
         { name: 'Home', path: '/' },
@@ -17,90 +30,67 @@ export function Navbar() {
     ]
 
     return (
-        <motion.nav
-            initial={{ y: -100, opacity: 0 }}
+        <motion.header
+            initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
             style={{
                 position: 'fixed',
                 top: 0,
                 left: 0,
                 width: '100%',
-                zIndex: 100,
-                padding: '24px 48px',
+                zIndex: 1000,
+                height: '32px',
+                background: 'rgba(20, 20, 20, 0.4)',
+                backdropFilter: 'blur(15px)',
+                WebkitBackdropFilter: 'blur(15px)',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
                 display: 'flex',
-                justifyContent: 'space-between',
                 alignItems: 'center',
-                pointerEvents: 'none', // Allow clicks through empty space
+                padding: '0 20px',
+                fontSize: '13px',
+                fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                fontWeight: 500,
+                color: '#fff',
+                userSelect: 'none',
+                boxShadow: '0 1px 5px rgba(0,0,0,0.1)'
             }}
         >
-            {/* Brand / Name */}
-            <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 }}
-                style={{ pointerEvents: 'auto' }}
-            >
-                <Link href="/" style={{ textDecoration: 'none' }}>
-                    <h1 style={{
-                        margin: 0,
-                        fontFamily: "'Inter', sans-serif",
-                        fontWeight: 900,
-                        fontSize: '1.5rem',
-                        color: pathname === '/photographer' ? '#111' : '#fff', // Dynamic color based on theme
-                        letterSpacing: '-0.02em',
-                        mixBlendMode: 'difference', // Cool effect against backgrounds
-                    }}>
-                        RIDWAN SIDDIQUE
-                    </h1>
+            {/* Left Side: Logo & Name */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flex: 1 }}>
+                <Link href="/" style={{ textDecoration: 'none', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '18px' }}></span>
+                    <span style={{ fontWeight: 700 }}>Ridwan Siddique</span>
                 </Link>
-            </motion.div>
 
-            {/* Navigation Links */}
-            <div style={{
-                display: 'flex',
-                gap: '32px',
-                pointerEvents: 'auto',
-                background: 'rgba(20, 20, 20, 0.4)',
-                backdropFilter: 'blur(12px)',
-                padding: '12px 24px',
-                borderRadius: '100px',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-            }}>
-                {links.map((link) => (
-                    <Link key={link.path} href={link.path} style={{ position: 'relative', textDecoration: 'none' }}>
-                        <motion.span
-                            onHoverStart={() => setIsHovered(link.name)}
-                            onHoverEnd={() => setIsHovered(null)}
-                            style={{
-                                color: pathname === link.path ? '#fff' : '#aaa',
-                                fontFamily: "'Inter', sans-serif",
-                                fontWeight: 500,
-                                fontSize: '0.9rem',
-                                transition: 'color 0.2s',
-                            }}
-                            whileHover={{ color: '#fff' }}
-                        >
-                            {link.name}
-                            {pathname === link.path && (
-                                <motion.div
-                                    layoutId="activeTab"
-                                    style={{
-                                        position: 'absolute',
-                                        bottom: -4,
-                                        left: 0,
-                                        right: 0,
-                                        height: '2px',
-                                        background: '#fff',
-                                        borderRadius: '2px',
-                                    }}
-                                />
-                            )}
-                        </motion.span>
-                    </Link>
-                ))}
+                {/* Navigation Links */}
+                <nav style={{ display: 'flex', gap: '20px', marginLeft: '20px' }}>
+                    {links.map((link) => (
+                        <Link key={link.path} href={link.path} style={{ textDecoration: 'none' }}>
+                            <span
+                                style={{
+                                    color: pathname === link.path ? '#fff' : 'rgba(255,255,255,0.7)',
+                                    transition: 'color 0.2s',
+                                    fontWeight: pathname === link.path ? 600 : 500,
+                                }}
+                            >
+                                {link.name}
+                            </span>
+                        </Link>
+                    ))}
+                </nav>
             </div>
-        </motion.nav>
+
+            {/* Right Side: Date & Time */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                {/* Status Icons (Mock) */}
+                <div style={{ display: 'flex', gap: '15px', opacity: 0.9 }}>
+                    <span>🔋 100%</span>
+                    <span>WIFI</span>
+                    <span>🔍</span>
+                </div>
+                <span>{time}</span>
+            </div>
+        </motion.header>
     )
 }
