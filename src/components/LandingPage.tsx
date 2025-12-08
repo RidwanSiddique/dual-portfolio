@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import styles from '@/app/page.module.css'
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
+import { CodeRain } from './ui/CodeRain'
+import { BokehParticles } from './ui/BokehParticles'
 
 export function LandingPage() {
     const router = useRouter()
@@ -27,12 +29,23 @@ export function LandingPage() {
                 role="button"
                 tabIndex={0}
             >
+                {/* Background Animation */}
+                <div className={styles.backgroundCanvas}>
+                    <CodeRain />
+                </div>
+
+                {/* Overlay Gradient for readability */}
+                <div style={{
+                    position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, #000 100%)', opacity: 0.6, pointerEvents: 'none'
+                }} />
+
                 <div className={styles.content}>
                     <motion.h1
                         className={styles.title}
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.2 }}
+                        initial={{ y: 0, opacity: 0, scale: 0.9 }}
+                        animate={{ y: 0, opacity: 1, scale: 1 }}
+                        whileHover={{ scale: 1.1, textShadow: "0 0 20px #00f0ff" }}
+                        transition={{ delay: 0.2, type: 'spring' }}
                     >
                         Developer
                     </motion.h1>
@@ -45,7 +58,6 @@ export function LandingPage() {
                         The Architect
                     </motion.div>
                 </div>
-                {/* 3D Canvas Placeholder */}
             </div>
 
             <div
@@ -54,12 +66,23 @@ export function LandingPage() {
                 role="button"
                 tabIndex={0}
             >
+                {/* Background Animation */}
+                <div className={styles.backgroundCanvas}>
+                    <BokehParticles />
+                </div>
+
+                {/* Overlay Gradient for readability */}
+                <div style={{
+                    position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, #000 40%)', opacity: 0.3, pointerEvents: 'none'
+                }} />
+
                 <div className={styles.content}>
                     <motion.h1
                         className={styles.title}
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.3 }}
+                        initial={{ y: 0, opacity: 0, scale: 0.9 }}
+                        animate={{ y: 0, opacity: 1, scale: 1 }}
+                        whileHover={{ scale: 1.1, textShadow: "0 0 20px #ff00aa" }}
+                        transition={{ delay: 0.3, type: 'spring' }}
                     >
                         Photographer
                     </motion.h1>
