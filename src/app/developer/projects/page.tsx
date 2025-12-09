@@ -41,29 +41,42 @@ const PROJECTS = [
 export default function ProjectsPage() {
     const router = useRouter()
     const [currentIndex, setCurrentIndex] = useState(0)
-    const [scrolling, setScrolling] = useState(false)
-    const containerRef = useRef<HTMLDivElement>(null)
+    const lastScrollTime = useRef(0)
 
     // Scroll Handler
     useEffect(() => {
         const handleWheel = (e: WheelEvent) => {
-            if (scrolling) return
-            setScrolling(true)
+            const now = Date.now()
+
+            // Check debounce (1.2 seconds wait) to ensure animation finishes
+            if (now - lastScrollTime.current < 1200) return
+
+            // Sensitivity Check (Ignore tiny trackpad movements)
+            if (Math.abs(e.deltaY) < 30) return
 
             if (e.deltaY > 0) {
-                // Scroll Down -> Next
-                setCurrentIndex(prev => (prev + 1) % PROJECTS.length)
+                // Scroll Down -> Next Project (No Loop)
+                if (currentIndex < PROJECTS.length - 1) {
+                    setCurrentIndex(prev => prev + 1)
+                    lastScrollTime.current = now
+                }
             } else {
-                // Scroll Up -> Prev
-                setCurrentIndex(prev => (prev - 1 + PROJECTS.length) % PROJECTS.length)
+                // Scroll Up -> Prev Project (No Loop)
+                if (currentIndex > 0) {
+                    setCurrentIndex(prev => prev - 1)
+                    lastScrollTime.current = now
+                } else {
+                    // Optionally: Go back to Developer Home if scrolling up from first project?
+                    // User didn't explicitly ask for this, but it flows well. 
+                    // Let's keep it strictly paging for now to avoid accidental exists.
+                    // router.push('/developer') 
+                }
             }
-
-            setTimeout(() => setScrolling(false), 800) // Debounce scroll
         }
 
         window.addEventListener('wheel', handleWheel)
         return () => window.removeEventListener('wheel', handleWheel)
-    }, [scrolling])
+    }, [currentIndex])
 
     return (
         <div style={{

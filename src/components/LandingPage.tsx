@@ -7,13 +7,20 @@ import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
 export function LandingPage() {
-    const [isMounted, setIsMounted] = useState(false)
+    const [showSelection, setShowSelection] = useState(false)
 
+    // Scroll Handler for Selection Overlay
     useEffect(() => {
-        setIsMounted(true)
-    }, [])
-
-    if (!isMounted) return null
+        const handleWheel = (e: WheelEvent) => {
+            if (e.deltaY > 50 && !showSelection) {
+                setShowSelection(true) // Scroll down -> Show
+            } else if (e.deltaY < -50 && showSelection) {
+                setShowSelection(false) // Scroll up -> Hide
+            }
+        }
+        window.addEventListener('wheel', handleWheel)
+        return () => window.removeEventListener('wheel', handleWheel)
+    }, [showSelection])
 
     return (
         <div style={{
@@ -44,7 +51,7 @@ export function LandingPage() {
             {/* Desktop Icons (Behind windows by default due to DOM order) */}
             <motion.div
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                animate={{ opacity: 1, filter: showSelection ? 'blur(10px)' : 'blur(0px)' }}
                 transition={{ delay: 1 }}
                 style={{
                     position: 'absolute',
@@ -54,7 +61,7 @@ export function LandingPage() {
                     flexDirection: 'column',
                     gap: '20px',
                     alignItems: 'center',
-                    pointerEvents: 'auto', // Enable clicks
+                    pointerEvents: showSelection ? 'none' : 'auto', // Disable when overlay active
                     zIndex: 10
                 }}
             >
@@ -111,8 +118,14 @@ export function LandingPage() {
                 ))}
             </motion.div>
 
-            {/* Application Windows (On top) */}
-            <div style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: 'none', zIndex: 20 }}>
+            {/* Application Windows */}
+            <motion.div
+                animate={{
+                    filter: showSelection ? 'blur(15px)' : 'blur(0px)',
+                    scale: showSelection ? 0.95 : 1
+                }}
+                style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: showSelection ? 'none' : 'none', zIndex: 20 }}
+            >
                 {/* Pointer events auto on windows so they are clickable */}
                 <div style={{ pointerEvents: 'auto' }}>
                     <TerminalLandingWindow />
@@ -121,8 +134,73 @@ export function LandingPage() {
                 <div style={{ pointerEvents: 'auto' }}>
                     <PhotoLandingWindow />
                 </div>
-            </div>
+            </motion.div>
 
+            {/* Scroll Selection Overlay */}
+            {showSelection && (
+                <motion.div
+                    initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+                    animate={{ opacity: 1, backdropFilter: 'blur(20px)' }}
+                    exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        zIndex: 100,
+                        background: 'rgba(0,0,0,0.4)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '40px'
+                    }}
+                >
+                    <h2 style={{ color: '#fff', fontSize: '24px', fontWeight: 300, letterSpacing: '2px' }}>CHOOSE YOUR PATH</h2>
+
+                    <div style={{ display: 'flex', gap: '60px' }}>
+                        {/* Developer Option */}
+                        <motion.div
+                            whileHover={{ scale: 1.1, y: -10 }}
+                            onClick={() => window.location.href = '/developer'}
+                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', cursor: 'pointer' }}
+                        >
+                            <div style={{
+                                width: 120, height: 120,
+                                background: 'linear-gradient(135deg, #1d1f21 0%, #282a2e 100%)',
+                                borderRadius: '24px',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                                border: '1px solid rgba(255,255,255,0.1)'
+                            }}>
+                                <span style={{ fontSize: '48px', color: '#7ee787' }}>&gt;_</span>
+                            </div>
+                            <span style={{ color: '#fff', fontSize: '18px', fontWeight: 500 }}>Developer</span>
+                        </motion.div>
+
+                        {/* Photographer Option */}
+                        <motion.div
+                            whileHover={{ scale: 1.1, y: -10 }}
+                            onClick={() => window.location.href = '/photographer'}
+                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', cursor: 'pointer' }}
+                        >
+                            <div style={{
+                                width: 120, height: 120,
+                                background: 'linear-gradient(135deg, #007AFF 0%, #00C6FF 100%)',
+                                borderRadius: '24px',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                                border: '1px solid rgba(255,255,255,0.1)'
+                            }}>
+                                <span style={{ fontSize: '48px' }}>📸</span>
+                            </div>
+                            <span style={{ color: '#fff', fontSize: '18px', fontWeight: 500 }}>Photographer</span>
+                        </motion.div>
+                    </div>
+
+                    <div style={{ marginTop: '40px', color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>
+                        Scroll Up to Return
+                    </div>
+                </motion.div>
+            )}
         </div>
     )
 }
