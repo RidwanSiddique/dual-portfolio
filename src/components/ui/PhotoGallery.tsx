@@ -6,8 +6,8 @@ import { FilterCanvas } from '@/components/canvas/FilterCanvas'
 
 // Placeholder data - connect to DB later
 const SAMPLE_PHOTOS = [
-    { id: '1', url: 'https://picsum.photos/id/64/800/1200', title: 'City Fog' },
-    { id: '2', url: 'https://picsum.photos/id/111/1200/800', title: 'Vintage Car' },
+    { id: '1', url: 'https://www.flickr.com/photos/ridwansiddique/51983711059/in/dateposted-public', title: 'City Fog' },
+    { id: '2', url: 'https://www.flickr.com/photos/ridwansiddique/51624276309/in/dateposted-public', title: 'Vintage Car' },
     { id: '3', url: 'https://picsum.photos/id/234/800/800', title: 'Abstract' },
     { id: '4', url: 'https://picsum.photos/id/15/1200/800', title: 'Waterfall' },
     { id: '5', url: 'https://picsum.photos/id/98/800/1200', title: 'Coastline' },

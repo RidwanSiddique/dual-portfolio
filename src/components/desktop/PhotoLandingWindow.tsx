@@ -46,7 +46,7 @@ export function PhotoLandingWindow() {
 
     return (
         <MacWindow
-            title="Pixea — Gallery"
+            title="Ridwan's Gallery"
             width={1000}
             height={800}
             x="50%"
@@ -103,7 +103,7 @@ export function PhotoLandingWindow() {
                         onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
                         onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     >
-                        Enter Gallery
+                        Explore My Photography
                     </button>
                 </motion.div>
 
