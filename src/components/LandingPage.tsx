@@ -54,19 +54,59 @@ export function LandingPage() {
                     flexDirection: 'column',
                     gap: '20px',
                     alignItems: 'center',
-                    pointerEvents: 'none', // Icons aren't clickable yet
-                    zIndex: 10 // Explicit lower z-index
+                    pointerEvents: 'auto', // Enable clicks
+                    zIndex: 10
                 }}
             >
-                {['Macintosh HD', 'Projects', 'Camera Roll'].map((name, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
-                        <div style={{ width: 48, height: 48, background: '#ccc', borderRadius: '8px', opacity: 0.8 }}></div>
+                {[
+                    { name: 'Home', route: '/about', color: '#ccc' },
+                    { name: 'Developer', route: '/developer', color: '#4e9a06' }, // Green folder
+                    { name: 'Photographer', route: '/photographer', color: '#007AFF' }, // Blue folder
+                    { name: 'Projects', route: '/api/projects', color: '#FF9500' } // Orange folder
+                ].map((item, i) => (
+                    <div
+                        key={i}
+                        onClick={() => window.location.href = item.route} // Simple navigation
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '5px',
+                            cursor: 'pointer',
+                            width: '80px'
+                        }}
+                        className="desktop-icon"
+                    >
+                        <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            style={{
+                                width: 56,
+                                height: 56,
+                                background: item.color,
+                                borderRadius: '12px',
+                                opacity: 0.9,
+                                boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '24px',
+                                color: 'rgba(255,255,255,0.8)'
+                            }}
+                        >
+                            {/* Simple icon representation */}
+                            {i === 0 ? '' : i === 1 ? '>_' : i === 2 ? '📸' : '📂'}
+                        </motion.div>
                         <span style={{
                             color: '#fff',
-                            fontSize: '12px',
-                            textShadow: '0 1px 3px rgba(0,0,0,0.8)',
-                            fontWeight: 500
-                        }}>{name}</span>
+                            fontSize: '13px',
+                            textShadow: '0 1px 4px rgba(0,0,0,0.9)',
+                            fontWeight: 600,
+                            textAlign: 'center',
+                            background: 'rgba(0,0,0,0.5)',
+                            padding: '2px 6px',
+                            borderRadius: '4px'
+                        }}>{item.name}</span>
                     </div>
                 ))}
             </motion.div>
