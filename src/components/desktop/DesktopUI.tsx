@@ -95,7 +95,8 @@ export function DesktopUI() {
         <div
             style={{
                 width: '100%',
-                height: '100vh',
+                height: 'calc(100vh - 40px)',
+                marginTop: '40px',
                 background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
                 position: 'relative',
                 overflow: 'hidden',

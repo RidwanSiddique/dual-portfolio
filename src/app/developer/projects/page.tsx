@@ -81,12 +81,15 @@ export default function ProjectsPage() {
     return (
         <div style={{
             width: '100vw',
-            height: '100vh',
+            height: 'calc(100vh - 40px)',
+            marginTop: '40px',
             background: '#0d1117', // Github Dark Dimmed
             color: '#c9d1d9',
             fontFamily: '"JetBrains Mono", monospace',
             overflow: 'hidden',
-            position: 'relative',
+            position: 'fixed', // Lock to viewport
+            top: 0,
+            left: 0,
             display: 'flex',
             flexDirection: 'column'
         }}>
