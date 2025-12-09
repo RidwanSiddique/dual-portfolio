@@ -42,6 +42,8 @@ export default function ProjectsPage() {
     const router = useRouter()
     const [currentIndex, setCurrentIndex] = useState(0)
     const lastScrollTime = useRef(0)
+    const [showWarning, setShowWarning] = useState(false)
+    const [warningStep, setWarningStep] = useState(0) // 0: None, 1: Warning
 
     // Scroll Handler
     useEffect(() => {
@@ -55,28 +57,51 @@ export default function ProjectsPage() {
             if (Math.abs(e.deltaY) < 30) return
 
             if (e.deltaY > 0) {
-                // Scroll Down -> Next Project (No Loop)
+                // Scroll Down
                 if (currentIndex < PROJECTS.length - 1) {
+                    // Next Project
                     setCurrentIndex(prev => prev + 1)
                     lastScrollTime.current = now
+                } else {
+                    // Last Project -> Show Warning
+                    if (!showWarning) {
+                        setShowWarning(true)
+                        lastScrollTime.current = now
+                    }
                 }
             } else {
-                // Scroll Up -> Prev Project (No Loop)
+                // Scroll Up
+                if (showWarning) {
+                    // If warning is open, maybe close it on scroll up?
+                    // User didn't specify, but it's good UX.
+                    // For now, let's keep it modal until action is taken or canceled.
+                    return
+                }
+
                 if (currentIndex > 0) {
+                    // Prev Project
                     setCurrentIndex(prev => prev - 1)
                     lastScrollTime.current = now
                 } else {
-                    // Optionally: Go back to Developer Home if scrolling up from first project?
-                    // User didn't explicitly ask for this, but it flows well. 
-                    // Let's keep it strictly paging for now to avoid accidental exists.
-                    // router.push('/developer') 
+                    // First Project -> Back to Developer Main
+                    router.push('/developer')
+                    lastScrollTime.current = now
                 }
             }
         }
 
         window.addEventListener('wheel', handleWheel)
         return () => window.removeEventListener('wheel', handleWheel)
-    }, [currentIndex])
+    }, [currentIndex, showWarning, router])
+
+    const handleProceed = () => {
+        router.push('/photographer')
+    }
+
+    const handleCancel = () => {
+        setShowWarning(false)
+        setCurrentIndex(0) // Go back to first project as requested
+    }
 
     return (
         <div style={{
@@ -119,7 +144,10 @@ export default function ProjectsPage() {
                     <motion.div
                         key={currentIndex}
                         initial={{ y: 200, opacity: 0, scale: 0.9, rotateX: -10 }}
-                        animate={{ y: 0, opacity: 1, scale: 1, rotateX: 0 }}
+                        animate={{
+                            y: 0, opacity: 1, scale: 1, rotateX: 0,
+                            filter: showWarning ? 'blur(10px)' : 'blur(0px)' // Blur when warning is active
+                        }}
                         exit={{ y: -200, opacity: 0, scale: 0.9, rotateX: 10 }}
                         transition={{ type: 'spring', stiffness: 100, damping: 20 }}
                         style={{
@@ -233,6 +261,89 @@ export default function ProjectsPage() {
                         </div>
                     </motion.div>
                 </AnimatePresence>
+
+                {/* Warning Modal */}
+                <AnimatePresence>
+                    {showWarning && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            style={{
+                                position: 'absolute',
+                                zIndex: 100,
+                                width: '400px',
+                                background: '#ececec', // Mac Window Gray
+                                borderRadius: '12px',
+                                boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
+                                overflow: 'hidden',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif'
+                            }}
+                        >
+                            {/* Window Bar (No Traffic Lights) */}
+                            <div style={{
+                                height: '28px',
+                                background: 'linear-gradient(to bottom, #e1e1e1, #dcdcdc)',
+                                borderBottom: '1px solid #c8c8c8',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }}>
+                                <span style={{ fontSize: '13px', color: '#666', fontWeight: 600 }}>System Warning</span>
+                            </div>
+
+                            {/* Content */}
+                            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+                                    {/* Warning Icon */}
+                                    <div style={{ fontSize: '48px' }}>⚠️</div>
+                                    <div>
+                                        <h3 style={{ margin: '0 0 8px 0', fontSize: '15px', fontWeight: 700, color: '#333' }}>Leaving Developer Portfolio</h3>
+                                        <p style={{ margin: 0, fontSize: '13px', color: '#333', lineHeight: '1.4' }}>
+                                            You are about to enter the Photography Portfolio. Do you want to proceed?
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                                    <button
+                                        onClick={handleCancel}
+                                        style={{
+                                            padding: '4px 16px',
+                                            background: '#fff',
+                                            border: '1px solid #c8c8c8',
+                                            borderRadius: '6px',
+                                            fontSize: '13px',
+                                            color: '#333',
+                                            cursor: 'pointer',
+                                            boxShadow: '0 1px 1px rgba(0,0,0,0.1)'
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleProceed}
+                                        style={{
+                                            padding: '4px 16px',
+                                            background: '#007AFF',
+                                            border: '1px solid #006ce6',
+                                            borderRadius: '6px',
+                                            fontSize: '13px',
+                                            color: '#fff',
+                                            fontWeight: 500,
+                                            cursor: 'pointer',
+                                            boxShadow: '0 1px 1px rgba(0,0,0,0.1)'
+                                        }}
+                                    >
+                                        Proceed
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             {/* Scroll Indicator */}
@@ -246,7 +357,8 @@ export default function ProjectsPage() {
                 color: '#8b949e',
                 fontSize: '12px',
                 textTransform: 'uppercase',
-                letterSpacing: '1px'
+                letterSpacing: '1px',
+                opacity: showWarning ? 0.3 : 1
             }}>
                 <span>Scroll to Navigate</span>
                 <motion.div
