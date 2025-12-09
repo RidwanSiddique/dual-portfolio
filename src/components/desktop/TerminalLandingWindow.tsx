@@ -5,7 +5,9 @@ import { MacWindow } from './MacWindow'
 import { motion } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
 
-const bootSequence = [
+
+// Inline boot sequence for brevity
+const BOOT_LOGS = [
     "Welcome to RidwanOS v2.0-LTS (GNU/Linux 5.15.0-76-generic x86_64)",
     "",
     " * Documentation:  https://github.com/RidwanSiddique",
@@ -24,7 +26,11 @@ const bootSequence = [
     "ridwan@portfolio:~$ "
 ]
 
-export function TerminalLandingWindow() {
+interface TerminalLandingWindowProps {
+    onNavigate?: () => void
+}
+
+export function TerminalLandingWindow({ onNavigate }: TerminalLandingWindowProps) {
     const router = useRouter()
     const [lines, setLines] = useState<string[]>([])
     const [showButton, setShowButton] = useState(false)
@@ -33,8 +39,8 @@ export function TerminalLandingWindow() {
     useEffect(() => {
         let lineIndex = 0
         const interval = setInterval(() => {
-            if (lineIndex < bootSequence.length) {
-                const nextLine = bootSequence[lineIndex]
+            if (lineIndex < BOOT_LOGS.length) {
+                const nextLine = BOOT_LOGS[lineIndex]
                 if (nextLine !== undefined) {
                     setLines(prev => [...prev, nextLine])
                 }
@@ -52,6 +58,15 @@ export function TerminalLandingWindow() {
     useEffect(() => {
         endRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [lines])
+
+    const handleEnter = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        if (onNavigate) {
+            onNavigate()
+        } else {
+            router.push('/developer')
+        }
+    }
 
     return (
         <MacWindow
@@ -86,10 +101,7 @@ export function TerminalLandingWindow() {
                     }}
                 >
                     <button
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            router.push('/developer')
-                        }}
+                        onClick={handleEnter}
                         style={{
                             background: '#4e9a06', // Ubuntu green
                             color: 'white',

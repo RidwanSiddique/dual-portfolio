@@ -5,7 +5,11 @@ import { MacWindow } from './MacWindow'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
-export function PhotoLandingWindow() {
+interface PhotoLandingWindowProps {
+    onNavigate?: () => void
+}
+
+export function PhotoLandingWindow({ onNavigate }: PhotoLandingWindowProps) {
     const router = useRouter()
     const [currentIndex, setCurrentIndex] = useState(0)
     const [isHovered, setIsHovered] = useState(false)
@@ -31,6 +35,15 @@ export function PhotoLandingWindow() {
 
         return () => clearInterval(interval)
     }, [isHovered, images.length])
+
+    const handleEnter = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        if (onNavigate) {
+            onNavigate()
+        } else {
+            router.push('/photographer')
+        }
+    }
 
     return (
         <MacWindow
@@ -72,10 +85,7 @@ export function PhotoLandingWindow() {
                     }}
                 >
                     <button
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            router.push('/photographer')
-                        }}
+                        onClick={handleEnter}
                         style={{
                             padding: '12px 24px',
                             fontSize: '16px',

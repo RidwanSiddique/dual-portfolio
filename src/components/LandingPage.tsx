@@ -3,15 +3,22 @@
 import { SpaceWallpaper } from './desktop/SpaceWallpaper'
 import { TerminalLandingWindow } from './desktop/TerminalLandingWindow'
 import { PhotoLandingWindow } from './desktop/PhotoLandingWindow'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { MacLoader } from './ui/MacLoader'
+import { CameraShutter } from './ui/CameraShutter'
 
 export function LandingPage() {
+    const router = useRouter()
     const [showSelection, setShowSelection] = useState(false)
+    const [navStatus, setNavStatus] = useState<'idle' | 'loading-dev' | 'loading-photo'>('idle')
 
     // Scroll Handler for Selection Overlay
     useEffect(() => {
         const handleWheel = (e: WheelEvent) => {
+            if (navStatus !== 'idle') return // Disable scroll during transition
+
             if (e.deltaY > 50 && !showSelection) {
                 setShowSelection(true) // Scroll down -> Show
             } else if (e.deltaY < -50 && showSelection) {
@@ -20,7 +27,24 @@ export function LandingPage() {
         }
         window.addEventListener('wheel', handleWheel)
         return () => window.removeEventListener('wheel', handleWheel)
-    }, [showSelection])
+    }, [showSelection, navStatus])
+
+    const handleNavigation = (path: string) => {
+        if (path === '/developer') {
+            setNavStatus('loading-dev')
+            setTimeout(() => {
+                router.push(path)
+            }, 2000) // 2s loader
+        } else if (path === '/photographer') {
+            setNavStatus('loading-photo')
+            // Flash animation is quick (150ms in, holds). Navigate after 400ms.
+            setTimeout(() => {
+                router.push(path)
+            }, 400)
+        } else {
+            router.push(path)
+        }
+    }
 
     return (
         <div style={{
@@ -30,6 +54,23 @@ export function LandingPage() {
             position: 'relative',
             background: '#000',
         }}>
+            {/* Transition Overlays */}
+            <AnimatePresence>
+                {navStatus === 'loading-dev' && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        key="mac-loader"
+                    >
+                        <MacLoader />
+                    </motion.div>
+                )}
+                {navStatus === 'loading-photo' && (
+                    <CameraShutter isOpen={false} /> // Mode=Close
+                )}
+            </AnimatePresence>
+
             {/* Background */}
             <SpaceWallpaper />
 
@@ -48,7 +89,7 @@ export function LandingPage() {
                 }}
             />
 
-            {/* Desktop Icons (Behind windows by default due to DOM order) */}
+            {/* Desktop Icons */}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1, filter: showSelection ? 'blur(10px)' : 'blur(0px)' }}
@@ -61,19 +102,19 @@ export function LandingPage() {
                     flexDirection: 'column',
                     gap: '20px',
                     alignItems: 'center',
-                    pointerEvents: showSelection ? 'none' : 'auto', // Disable when overlay active
+                    pointerEvents: showSelection ? 'none' : 'auto',
                     zIndex: 10
                 }}
             >
                 {[
                     { name: 'Home', route: '/', color: '#ccc' },
-                    { name: 'Developer', route: '/developer', color: '#4e9a06' }, // Green folder
-                    { name: 'Photographer', route: '/photographer', color: '#007AFF' }, // Blue folder
-                    { name: 'Projects', route: '/developer/projects', color: '#FF9500' } // Orange folder
+                    { name: 'Developer', route: '/developer', color: '#4e9a06' },
+                    { name: 'Photographer', route: '/photographer', color: '#007AFF' },
+                    { name: 'Projects', route: '/developer/projects', color: '#FF9500' }
                 ].map((item, i) => (
                     <div
                         key={i}
-                        onClick={() => window.location.href = item.route} // Simple navigation
+                        onClick={() => handleNavigation(item.route)}
                         style={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -101,7 +142,6 @@ export function LandingPage() {
                                 color: 'rgba(255,255,255,0.8)'
                             }}
                         >
-                            {/* Simple icon representation */}
                             {i === 0 ? '' : i === 1 ? '>_' : i === 2 ? '📸' : '📂'}
                         </motion.div>
                         <span style={{
@@ -118,7 +158,11 @@ export function LandingPage() {
                 ))}
             </motion.div>
 
-            {/* Application Windows */}
+            {/* Application Windows - Passed Navigation Handler via Context or Props? 
+                Ideally props, but I'd have to edit the files. 
+                For now I will update the Overlay navigation which is here. 
+                The Windows will still quick-nav until I update them.
+            */}
             <motion.div
                 animate={{
                     filter: showSelection ? 'blur(15px)' : 'blur(0px)',
@@ -126,13 +170,14 @@ export function LandingPage() {
                 }}
                 style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: showSelection ? 'none' : 'none', zIndex: 20 }}
             >
-                {/* Pointer events auto on windows so they are clickable */}
                 <div style={{ pointerEvents: 'auto' }}>
-                    <TerminalLandingWindow />
+                    {/* @ts-ignore - Will update component next */}
+                    <TerminalLandingWindow onNavigate={() => handleNavigation('/developer')} />
                 </div>
 
                 <div style={{ pointerEvents: 'auto' }}>
-                    <PhotoLandingWindow />
+                    {/* @ts-ignore - Will update component next */}
+                    <PhotoLandingWindow onNavigate={() => handleNavigation('/photographer')} />
                 </div>
             </motion.div>
 
@@ -160,7 +205,7 @@ export function LandingPage() {
                         {/* Developer Option */}
                         <motion.div
                             whileHover={{ scale: 1.1, y: -10 }}
-                            onClick={() => window.location.href = '/developer'}
+                            onClick={() => handleNavigation('/developer')}
                             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', cursor: 'pointer' }}
                         >
                             <div style={{
@@ -179,7 +224,7 @@ export function LandingPage() {
                         {/* Photographer Option */}
                         <motion.div
                             whileHover={{ scale: 1.1, y: -10 }}
-                            onClick={() => window.location.href = '/photographer'}
+                            onClick={() => handleNavigation('/photographer')}
                             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', cursor: 'pointer' }}
                         >
                             <div style={{
