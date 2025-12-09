@@ -56,12 +56,12 @@ export function TerminalLandingWindow() {
     return (
         <MacWindow
             title="Terminal — ridwan@portfolio: ~"
-            width={1000}
-            height={800}
-            x="10%"
-            y="20%"
+            width="44vw"
+            height="70vh"
+            x="4%"
+            y="10%"
             // Removed default onClick to make button exclusive
-            style={{ cursor: 'text', background: '#300a24' }} // Ubuntu terminal bg color
+            style={{ cursor: 'text', background: '#300a24', minWidth: '300px', minHeight: '300px' }} // Ubuntu terminal bg color
         >
             <div style={{
                 position: 'relative',

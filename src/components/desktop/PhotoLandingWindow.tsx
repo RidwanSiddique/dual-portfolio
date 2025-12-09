@@ -47,12 +47,12 @@ export function PhotoLandingWindow() {
     return (
         <MacWindow
             title="Ridwan's Gallery"
-            width={1000}
-            height={800}
-            x="50%"
-            y="30%"
+            width="44vw" // Responsive width
+            height="70vh" // Responsive height
+            x="52%" // Positioned to right half
+            y="10%"
             // Removed global onClick navigation
-            style={{ cursor: 'default', background: '#222', overflow: 'hidden' }}
+            style={{ cursor: 'default', background: '#222', overflow: 'hidden', minWidth: '300px', minHeight: '300px' }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
