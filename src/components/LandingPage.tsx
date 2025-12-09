@@ -187,6 +187,7 @@ export function LandingPage() {
                     initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
                     animate={{ opacity: 1, backdropFilter: 'blur(20px)' }}
                     exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+                    onClick={() => setShowSelection(false)} // Click anywhere to return
                     style={{
                         position: 'absolute',
                         inset: 0,
@@ -196,7 +197,8 @@ export function LandingPage() {
                         flexDirection: 'column',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        gap: '40px'
+                        gap: '40px',
+                        cursor: 'pointer' // Indicate interactivity
                     }}
                 >
                     <h2 style={{ color: '#fff', fontSize: '24px', fontWeight: 300, letterSpacing: '2px' }}>CHOOSE YOUR PATH</h2>
@@ -205,7 +207,10 @@ export function LandingPage() {
                         {/* Developer Option */}
                         <motion.div
                             whileHover={{ scale: 1.1, y: -10 }}
-                            onClick={() => handleNavigation('/developer')}
+                            onClick={(e) => {
+                                e.stopPropagation() // Prevent closing overlay
+                                handleNavigation('/developer')
+                            }}
                             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', cursor: 'pointer' }}
                         >
                             <div style={{
@@ -224,7 +229,10 @@ export function LandingPage() {
                         {/* Photographer Option */}
                         <motion.div
                             whileHover={{ scale: 1.1, y: -10 }}
-                            onClick={() => handleNavigation('/photographer')}
+                            onClick={(e) => {
+                                e.stopPropagation() // Prevent closing overlay
+                                handleNavigation('/photographer')
+                            }}
                             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', cursor: 'pointer' }}
                         >
                             <div style={{
@@ -242,7 +250,7 @@ export function LandingPage() {
                     </div>
 
                     <div style={{ marginTop: '40px', color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>
-                        Scroll Up to Return
+                        Swipe Up or Click Anywhere to Return
                     </div>
                 </motion.div>
             )}
