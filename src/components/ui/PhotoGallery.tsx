@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
 import { motion, useScroll, useTransform } from 'framer-motion'
 
 // Sample Data Generator
@@ -62,7 +63,54 @@ export function PhotoGallery() {
                 <GalleryItem key={photo.id} photo={photo} index={index} />
             ))}
 
-            {loading && <div style={{ padding: '20px', color: '#666' }}>Loading more exhibits...</div>}
+            {/* Loader / Footer */}
+            <div style={{ marginTop: '60px', textAlign: 'center' }}>
+                {photos.length < 10 ? (
+                    <div style={{ padding: '20px', color: '#666' }}>
+                        Loading more exhibits...
+                    </div>
+                ) : (
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        style={{
+                            padding: '60px',
+                            background: '#111',
+                            borderRadius: '20px',
+                            border: '1px solid #333',
+                            maxWidth: '600px',
+                            margin: '0 auto',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '20px'
+                        }}
+                    >
+                        <div style={{ fontSize: '48px' }}>🎨</div>
+                        <h2 style={{ color: '#fff', fontSize: '24px', margin: 0 }}>Step Into The Darkroom</h2>
+                        <p style={{ color: '#888', textAlign: 'center', lineHeight: '1.6' }}>
+                            Want to see how these photos are made? <br />
+                            Enter the editing suite to experiment with presets and adjustments.
+                        </p>
+                        <Link href="/photographer/editor">
+                            <button style={{
+                                padding: '16px 32px',
+                                background: '#007AFF', // Lightroom Blue-ish
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '8px',
+                                fontSize: '16px',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 12px rgba(0,122,255,0.3)'
+                            }}>
+                                Open Lightroom Classic
+                            </button>
+                        </Link>
+                    </motion.div>
+                )}
+            </div>
         </div>
     )
 }
