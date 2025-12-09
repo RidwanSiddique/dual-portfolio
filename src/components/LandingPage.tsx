@@ -66,7 +66,7 @@ export function LandingPage() {
                 }}
             >
                 {[
-                    { name: 'Home', route: '/about', color: '#ccc' },
+                    { name: 'Home', route: '/', color: '#ccc' },
                     { name: 'Developer', route: '/developer', color: '#4e9a06' }, // Green folder
                     { name: 'Photographer', route: '/photographer', color: '#007AFF' }, // Blue folder
                     { name: 'Projects', route: '/developer/projects', color: '#FF9500' } // Orange folder
