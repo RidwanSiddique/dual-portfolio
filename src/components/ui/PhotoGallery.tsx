@@ -1,137 +1,153 @@
 'use client'
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { FilterCanvas } from '@/components/canvas/FilterCanvas'
+import { useState, useEffect, useRef } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 
-// Placeholder data - connect to DB later
-const SAMPLE_PHOTOS = [
-    { id: '1', url: 'https://www.flickr.com/photos/ridwansiddique/51983711059/in/dateposted-public', title: 'City Fog' },
-    { id: '2', url: 'https://www.flickr.com/photos/ridwansiddique/51624276309/in/dateposted-public', title: 'Vintage Car' },
-    { id: '3', url: 'https://picsum.photos/id/234/800/800', title: 'Abstract' },
-    { id: '4', url: 'https://picsum.photos/id/15/1200/800', title: 'Waterfall' },
-    { id: '5', url: 'https://picsum.photos/id/98/800/1200', title: 'Coastline' },
-]
+// Sample Data Generator
+const GENERATE_PHOTOS = (startId: number, count: number) => {
+    const images = [
+        'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=800&q=80', // Landscape
+        'https://images.unsplash.com/photo-1518098268026-4e187743369b?auto=format&fit=crop&w=800&q=80', // Street
+        'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=800&q=80', // Nature
+        'https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?auto=format&fit=crop&w=800&q=80', // Portrait style
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80', // Portrait face
+        'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=800&q=80', // Fashion
+    ]
+
+    return Array.from({ length: count }).map((_, i) => ({
+        id: (startId + i).toString(),
+        url: images[(startId + i) % images.length],
+        title: `Exhibit No. ${startId + i + 1}`,
+        description: 'Captured in natural light using 35mm film. The composition highlights the geometric patterns found in everyday life.',
+        date: '2024'
+    }))
+}
 
 export function PhotoGallery() {
-    const [selectedPhoto, setSelectedPhoto] = useState<typeof SAMPLE_PHOTOS[0] | null>(null)
+    const [photos, setPhotos] = useState(GENERATE_PHOTOS(0, 5))
+    const [loading, setLoading] = useState(false)
 
-    // Editor State
-    const [settings, setSettings] = useState({
-        brightness: 0,
-        contrast: 0,
-        saturation: 0,
-        sepia: 0,
-        vignette: 0
-    })
-
-    const resetSettings = () => setSettings({
-        brightness: 0,
-        contrast: 0,
-        saturation: 0,
-        sepia: 0,
-        vignette: 0
-    })
-
-    // Presets
-    const applyPreset = (type: string) => {
-        switch (type) {
-            case 'bw': setSettings({ ...settings, saturation: -1, contrast: 0.2 }); break;
-            case 'vintage': setSettings({ ...settings, sepia: 0.5, vignette: 0.5, contrast: 0.1 }); break;
-            case 'cyber': setSettings({ ...settings, saturation: 0.5, contrast: 0.3, brightness: 0.1 }); break;
-            default: resetSettings();
+    // Infinite Scroll
+    const handleScroll = () => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+            if (!loading) {
+                setLoading(true)
+                // Simulate network delay
+                setTimeout(() => {
+                    setPhotos(prev => [...prev, ...GENERATE_PHOTOS(prev.length, 5)])
+                    setLoading(false)
+                }, 500)
+            }
         }
     }
 
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [loading])
+
     return (
-        <>
+        <div style={{
+            minHeight: '100vh',
+            background: '#f4f4f4', // Gallery Wall Color
+            backgroundImage: 'radial-gradient(#e0e0e0 1px, transparent 1px)',
+            backgroundSize: '20px 20px',
+            padding: '120px 20px 40px 20px', // Top padding for navbar
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '150px' // Large gap between photos
+        }}>
+            {photos.map((photo, index) => (
+                <GalleryItem key={photo.id} photo={photo} index={index} />
+            ))}
+
+            {loading && <div style={{ padding: '20px', color: '#666' }}>Loading more exhibits...</div>}
+        </div>
+    )
+}
+
+function GalleryItem({ photo, index }: { photo: any, index: number }) {
+    const isEven = index % 2 === 0
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 100 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '60px',
+                width: '100%',
+                maxWidth: '1200px',
+                flexDirection: isEven ? 'row' : 'row-reverse' // Alternating layout
+            }}
+        >
+            {/* The Photo Frame */}
             <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                gap: '20px'
+                position: 'relative',
+                padding: '15px',
+                background: '#fff',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.15), 0 5px 15px rgba(0,0,0,0.05)',
+                transform: `rotate(${isEven ? '1deg' : '-1deg'})`, // Slight natural tilt
             }}>
-                {SAMPLE_PHOTOS.map((photo) => (
-                    <motion.div
-                        key={photo.id}
-                        layoutId={photo.id}
-                        onClick={() => {
-                            setSelectedPhoto(photo)
-                            resetSettings()
-                        }}
-                        style={{ cursor: 'pointer', overflow: 'hidden', borderRadius: '8px' }}
-                        whileHover={{ scale: 1.02 }}
-                    >
-                        <img
-                            src={photo.url}
-                            alt={photo.title}
-                            style={{ width: '100%', height: 'auto', display: 'block' }}
-                        />
-                    </motion.div>
-                ))}
+                {/* Hanging String (Visual) */}
+                <div style={{
+                    position: 'absolute',
+                    top: '-100px',
+                    left: '50%',
+                    width: '2px',
+                    height: '100px',
+                    background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.1))',
+                    zIndex: -1
+                }} />
+
+                <div style={{ width: '500px', height: '350px', overflow: 'hidden', background: '#eee' }}>
+                    <img
+                        src={photo.url}
+                        alt={photo.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                </div>
             </div>
 
-            <AnimatePresence>
-                {selectedPhoto && (
-                    <motion.div
-                        layoutId={selectedPhoto.id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        style={{
-                            position: 'fixed',
-                            top: 0, left: 0,
-                            width: '100vw', height: '100vh',
-                            background: 'rgba(0,0,0,0.95)',
-                            zIndex: 100,
-                            display: 'flex',
-                            flexDirection: 'column'
-                        }}
-                    >
-                        <div style={{ flex: 1, position: 'relative' }}>
-                            <FilterCanvas url={selectedPhoto.url} settings={settings} />
-                        </div>
+            {/* The Tag/Label */}
+            <div style={{
+                width: '250px',
+                padding: '20px',
+                background: '#fff',
+                border: '1px solid #ddd',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '10px',
+                position: 'relative'
+            }}>
+                {/* Pin visual */}
+                <div style={{
+                    position: 'absolute',
+                    top: '-10px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '12px',
+                    height: '12px',
+                    borderRadius: '50%',
+                    background: '#d32f2f',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                }} />
 
-                        {/* Editor UI */}
-                        <div style={{
-                            height: '250px',
-                            background: '#111',
-                            borderTop: '1px solid #333',
-                            padding: '1rem',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '1rem'
-                        }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <h3 style={{ margin: 0 }}>DARKROOM</h3>
-                                <button
-                                    onClick={() => setSelectedPhoto(null)}
-                                    style={{ background: 'transparent', border: '1px solid white', color: 'white', padding: '0.5rem 1rem', cursor: 'pointer' }}
-                                >
-                                    CLOSE
-                                </button>
-                            </div>
-
-                            <div style={{ display: 'flex', gap: '2rem', height: '100%' }}>
-                                {/* Sliders */}
-                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', justifyContent: 'center' }}>
-                                    <label>Brightness <input type="range" min="-0.5" max="0.5" step="0.01" value={settings.brightness} onChange={e => setSettings({ ...settings, brightness: parseFloat(e.target.value) })} /></label>
-                                    <label>Contrast <input type="range" min="-0.5" max="0.5" step="0.01" value={settings.contrast} onChange={e => setSettings({ ...settings, contrast: parseFloat(e.target.value) })} /></label>
-                                    <label>Saturation <input type="range" min="-1" max="1" step="0.01" value={settings.saturation} onChange={e => setSettings({ ...settings, saturation: parseFloat(e.target.value) })} /></label>
-                                </div>
-
-                                {/* Presets */}
-                                <div style={{ width: '200px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                    <div>PRESETS</div>
-                                    <button onClick={() => applyPreset('bw')}>BW</button>
-                                    <button onClick={() => applyPreset('vintage')}>Vintage</button>
-                                    <button onClick={() => applyPreset('cyber')}>Cyber</button>
-                                    <button onClick={resetSettings}>Reset</button>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </>
+                <h3 style={{ margin: 0, fontSize: '18px', fontFamily: 'serif', color: '#333' }}>{photo.title}</h3>
+                <div style={{ width: '100%', height: '1px', background: '#eee' }} />
+                <p style={{ margin: 0, fontSize: '14px', color: '#666', lineHeight: '1.6', fontFamily: 'sans-serif' }}>
+                    {photo.description}
+                </p>
+                <span style={{ fontSize: '12px', color: '#999', marginTop: '10px', fontStyle: 'italic' }}>
+                    Date: {photo.date}
+                </span>
+            </div>
+        </motion.div>
     )
 }
