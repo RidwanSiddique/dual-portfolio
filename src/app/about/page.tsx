@@ -1,93 +1,203 @@
 'use client'
 
-import styles from './page.module.css'
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 
 export default function AboutPage() {
+    // Resume Data
+    const skills = [
+        "React", "Next.js", "TypeScript", "Node.js", "GraphQL",
+        "TailwindCSS", "Framer Motion", "PostgreSQL", "Prisma",
+        "Photography", "Lightroom", "Adobe Creative Suite"
+    ]
+
+    const education = [
+        {
+            degree: "B.Sc. in Computer Science",
+            school: "University of Technology",
+            year: "2019 - 2023",
+            description: "Specialized in Software Engineering and Human-Computer Interaction. graduated with Honors."
+        },
+        {
+            degree: "Certified Professional Photographer",
+            school: "Institute of Visual Arts",
+            year: "2018 - 2019",
+            description: "Focus on composition, lighting dynamics, and visual storytelling."
+        }
+    ]
+
     return (
-        <div className={styles.container}>
-            <div className={styles.content}>
-                {/* Hero Section */}
-                <motion.section
-                    className={styles.heroSection}
-                    initial={{ opacity: 0, y: 30 }}
+        <div style={{
+            width: '100vw',
+            minHeight: '100vh',
+            background: '#111', // Dark background
+            color: '#eee',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+            overflowY: 'auto',
+            paddingBottom: '80px'
+        }}>
+            {/* Main Container */}
+            <div style={{
+                maxWidth: '800px',
+                margin: '0 auto',
+                padding: '60px 20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '60px'
+            }}>
+                {/* Header Section */}
+                <motion.header
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
+                    style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}
                 >
-                    <h1 className={styles.title}>About Me</h1>
-                    <p className={styles.bio}>
-                        I am a multidisciplinary creator bridging the gap between logic and logic.
-                        As a Full Stack Developer, I architect robust digital solutions.
-                        As a Photographer, I capture the fleeting moments of the world.
-                        Two disciplines, one vision.
+                    {/* Headshot */}
+                    <div style={{
+                        width: '180px',
+                        height: '180px',
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        border: '4px solid #333',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
+                    }}>
+                        <img
+                            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80"
+                            alt="Ridwan Siddique"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                    </div>
+
+                    {/* Name & Title */}
+                    <div>
+                        <h1 style={{ fontSize: '3rem', fontWeight: 700, margin: '0 0 10px 0', background: 'linear-gradient(to right, #fff, #aaa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                            Ridwan Siddique
+                        </h1>
+                        <h2 style={{ fontSize: '1.2rem', fontWeight: 400, color: '#888', margin: 0 }}>
+                            Full Stack Developer & Photographer
+                        </h2>
+                    </div>
+
+                    {/* Contact Info */}
+                    <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center', color: '#ccc', fontSize: '0.95rem' }}>
+                        <a href="mailto:ridwan@example.com" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>✉️</span> ridwan@example.com
+                        </a>
+                        <span style={{ color: '#444' }}>|</span>
+                        <a href="https://github.com/RidwanSiddique" target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>🐙</span> GitHub
+                        </a>
+                        <span style={{ color: '#444' }}>|</span>
+                        <a href="https://linkedin.com/in/RidwanSiddique" target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>💼</span> LinkedIn
+                        </a>
+                    </div>
+                </motion.header>
+
+                {/* Divider */}
+                <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ delay: 0.5, duration: 0.8 }}
+                    style={{ height: '1px', background: 'linear-gradient(to right, transparent, #333, transparent)', width: '100%' }}
+                />
+
+                {/* Professional Summary */}
+                <Section title="Professional Summary" delay={0.2}>
+                    <p style={{ lineHeight: '1.8', color: '#ccc', fontSize: '1.05rem', margin: 0 }}>
+                        I am a multidisciplinary creator bridging the gap between logic and art.
+                        With a robust background in software engineering, I architect scalable digital solutions that solve real-world problems.
+                        Simultaneously, my passion for photography allows me to see the world through a creative lens, influencing my design philosophy with a keen eye for aesthetics and detail.
+                        I build applications that not only work flawlessly but feel premium.
                     </p>
-                </motion.section>
+                </Section>
 
-                <div className={styles.divider} />
+                {/* Education */}
+                <Section title="Education" delay={0.4}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+                        {education.map((edu, i) => (
+                            <div key={i} style={{ paddingLeft: '20px', borderLeft: '2px solid #333' }}>
+                                <h3 style={{ fontSize: '1.2rem', margin: '0 0 5px 0', color: '#fff' }}>{edu.degree}</h3>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#666', marginBottom: '10px', fontSize: '0.9rem' }}>
+                                    <span>{edu.school}</span>
+                                    <span>{edu.year}</span>
+                                </div>
+                                <p style={{ color: '#999', fontSize: '0.95rem', margin: 0 }}>{edu.description}</p>
+                            </div>
+                        ))}
+                    </div>
+                </Section>
 
-                {/* Details Grid */}
-                <div className={styles.grid}>
-                    {/* Developer Card */}
-                    <motion.div
-                        className={styles.card}
-                        initial={{ opacity: 0, x: -30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2, duration: 0.6 }}
+                {/* Skills */}
+                <Section title="Technical Expertise" delay={0.6}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                        {skills.map((skill, i) => (
+                            <span key={i} style={{
+                                background: '#222',
+                                padding: '8px 16px',
+                                borderRadius: '20px',
+                                fontSize: '0.9rem',
+                                color: '#ddd',
+                                border: '1px solid #333'
+                            }}>
+                                {skill}
+                            </span>
+                        ))}
+                    </div>
+                </Section>
+
+                {/* Footer / Resume Download */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.8 }}
+                    style={{ textAlign: 'center', marginTop: '40px' }}
+                >
+                    <button style={{
+                        padding: '16px 40px',
+                        fontSize: '1rem',
+                        fontWeight: 600,
+                        color: '#111',
+                        background: '#fff',
+                        border: 'none',
+                        borderRadius: '30px',
+                        cursor: 'pointer',
+                        boxShadow: '0 10px 20px rgba(255,255,255,0.1)',
+                        transition: 'transform 0.2s, box-shadow 0.2s',
+                    }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 15px 30px rgba(255,255,255,0.2)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 20px rgba(255,255,255,0.1)'; }}
+                        onClick={() => alert("Resume download simulation started.")}
                     >
-                        <h2 className={styles.cardTitle}>
-                            <span style={{ color: '#00f0ff' }}>&lt;/&gt;</span> Developer
-                        </h2>
-                        <p className={styles.cardText}>
-                            Specializing in React, Next.js, and Node.js ecosystems.
-                            I build performant web applications with a focus on interactive UI and complex data visualization.
-                        </p>
-                        <p className={styles.cardText}>
-                            Obsessed with clean code, scalability, and pixel-perfect implementation.
-                        </p>
-                    </motion.div>
-
-                    {/* Photographer Card */}
-                    <motion.div
-                        className={styles.card}
-                        initial={{ opacity: 0, x: 30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.4, duration: 0.6 }}
-                    >
-                        <h2 className={styles.cardTitle}>
-                            <span style={{ color: '#ff00aa' }}>📸</span> Photographer
-                        </h2>
-                        <p className={styles.cardText}>
-                            Visual storyteller with a passion for street, portrait, and landscape photography.
-                            I believe every frame should evoke an emotion and tell a story.
-                        </p>
-                        <p className={styles.cardText}>
-                            Experiementing with light, shadow, and composition to create compelling imagery.
-                        </p>
-                    </motion.div>
-
-                    {/* Contact Card */}
-                    <motion.div
-                        className={styles.card}
-                        style={{ gridColumn: '1 / -1' }}
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6, duration: 0.6 }}
-                    >
-                        <h2 className={styles.cardTitle}>
-                            Let's Connect
-                        </h2>
-                        <p className={styles.cardText}>
-                            Always open to new opportunities, collaborations, or just a chat about tech and art.
-                        </p>
-                        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-                            <a href="mailto:contact@ridwansiddique.com" className={styles.contactLink}>Email Me -&gt;</a>
-                            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className={styles.contactLink}>GitHub -&gt;</a>
-                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className={styles.contactLink}>LinkedIn -&gt;</a>
-                            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={styles.contactLink}>Instagram -&gt;</a>
-                        </div>
-                    </motion.div>
-                </div>
+                        Download Full Resume
+                    </button>
+                </motion.div>
             </div>
         </div>
+    )
+}
+
+function Section({ title, children, delay }: { title: string, children: React.ReactNode, delay: number }) {
+    return (
+        <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ delay, duration: 0.6 }}
+        >
+            <h2 style={{
+                fontSize: '1.5rem',
+                marginBottom: '24px',
+                color: '#fff',
+                borderBottom: '1px solid #333',
+                paddingBottom: '10px',
+                display: 'inline-block',
+                paddingRight: '20px'
+            }}>
+                {title}
+            </h2>
+            <div>{children}</div>
+        </motion.section>
     )
 }
