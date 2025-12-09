@@ -10,14 +10,14 @@ export function PhotoLandingWindow() {
     const [currentIndex, setCurrentIndex] = useState(0)
     const [isHovered, setIsHovered] = useState(false)
 
-    // Mock images (gradients) - in real app, use photos
+    // Real photos from the gallery
     const images = [
-        'linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%)',
-        'linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%)',
-        'linear-gradient(to top, #fbc2eb 0%, #a6c1ee 100%)',
-        'linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)',
-        'linear-gradient(to top, #30cfd0 0%, #330867 100%)',
-        'linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%)',
+        'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1518098268026-4e187743369b?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=800&q=80',
     ]
 
     useEffect(() => {
@@ -96,16 +96,15 @@ export function PhotoLandingWindow() {
                     </button>
                 </motion.div>
 
-                {/* Framed Photo */}
+                {/* Framed Photo - Larger Size */}
                 <div style={{
                     position: 'relative',
-                    padding: '12px',
+                    padding: '15px', // Thicker frame
                     background: '#fff',
                     boxShadow: '0 20px 50px rgba(0,0,0,0.15)',
                     transform: 'rotate(-1deg)',
-                    maxWidth: '80%',
-                    maxHeight: '70%',
-                    aspectRatio: '4/3', // maintain standard aspect ratio frame
+                    width: '85%',  // Increased from max-width to fixed percentage
+                    height: '80%', // Increased height
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
@@ -113,10 +112,10 @@ export function PhotoLandingWindow() {
                     {/* Hanging String (Visual Detail) */}
                     <div style={{
                         position: 'absolute',
-                        top: '-100px',
+                        top: '-150px', // Adjusted for larger frame
                         left: '50%',
                         width: '1px',
-                        height: '100px',
+                        height: '150px',
                         background: 'rgba(0,0,0,0.1)',
                         zIndex: -1
                     }} />
@@ -133,27 +132,37 @@ export function PhotoLandingWindow() {
                                 style={{
                                     width: '100%',
                                     height: '100%',
-                                    background: images[currentIndex],
                                 }}
-                            />
+                            >
+                                <img
+                                    src={images[currentIndex]}
+                                    alt="Gallery Preview"
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover'
+                                    }}
+                                />
+                            </motion.div>
                         </AnimatePresence>
                     </div>
                 </div>
 
-                {/* Gallery Label/Tag next to frame - visible only on large enough screens/windows */}
+                {/* Gallery Label/Tag next to frame */}
                 <div style={{
                     position: 'absolute',
-                    right: '10%',
-                    bottom: '10%',
+                    right: '20px',
+                    bottom: '20px',
                     background: '#fff',
                     padding: '8px 12px',
                     border: '1px solid #ddd',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
                     transform: 'rotate(2deg)',
-                    maxWidth: '120px'
+                    maxWidth: '120px',
+                    zIndex: 10
                 }}>
                     <div style={{ fontSize: '10px', color: '#999', marginBottom: '4px' }}>EXHIBIT NO. {currentIndex + 1}</div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, color: '#333' }}>Abstract Collection</div>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: '#333' }}>Portfolio Highlights</div>
                 </div>
 
             </div>
