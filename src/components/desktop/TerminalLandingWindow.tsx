@@ -56,7 +56,7 @@ export function TerminalLandingWindow() {
     return (
         <MacWindow
             title="Terminal — ridwan@portfolio: ~"
-            width="44vw"
+            width="42vw"
             height="70vh"
             x="4%"
             y="10%"

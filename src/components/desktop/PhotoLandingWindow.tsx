@@ -47,9 +47,9 @@ export function PhotoLandingWindow() {
     return (
         <MacWindow
             title="Ridwan's Gallery"
-            width="44vw" // Responsive width
+            width="42vw" // Responsive width
             height="70vh" // Responsive height
-            x="52%" // Positioned to right half
+            x="48%" // Positioned to right half
             y="10%"
             // Removed global onClick navigation
             style={{ cursor: 'default', background: '#222', overflow: 'hidden', minWidth: '300px', minHeight: '300px' }}

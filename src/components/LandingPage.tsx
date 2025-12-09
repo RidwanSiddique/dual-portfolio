@@ -41,19 +41,7 @@ export function LandingPage() {
                 }}
             />
 
-            {/* Application Windows */}
-            <div style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: 'none' }}>
-                {/* Pointer events auto on windows so they are clickable */}
-                <div style={{ pointerEvents: 'auto' }}>
-                    <TerminalLandingWindow />
-                </div>
-
-                <div style={{ pointerEvents: 'auto' }}>
-                    <PhotoLandingWindow />
-                </div>
-            </div>
-
-            {/* Desktop Icons (Optional decorative elements) */}
+            {/* Desktop Icons (Behind windows by default due to DOM order) */}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -66,7 +54,8 @@ export function LandingPage() {
                     flexDirection: 'column',
                     gap: '20px',
                     alignItems: 'center',
-                    pointerEvents: 'none' // Just visual for now
+                    pointerEvents: 'none', // Icons aren't clickable yet
+                    zIndex: 10 // Explicit lower z-index
                 }}
             >
                 {['Macintosh HD', 'Projects', 'Camera Roll'].map((name, i) => (
@@ -81,6 +70,18 @@ export function LandingPage() {
                     </div>
                 ))}
             </motion.div>
+
+            {/* Application Windows (On top) */}
+            <div style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: 'none', zIndex: 20 }}>
+                {/* Pointer events auto on windows so they are clickable */}
+                <div style={{ pointerEvents: 'auto' }}>
+                    <TerminalLandingWindow />
+                </div>
+
+                <div style={{ pointerEvents: 'auto' }}>
+                    <PhotoLandingWindow />
+                </div>
+            </div>
 
         </div>
     )
