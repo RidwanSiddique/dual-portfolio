@@ -41,7 +41,7 @@ const PROJECTS = [
 export default function ProjectsPage() {
     const router = useRouter()
     const [currentIndex, setCurrentIndex] = useState(0)
-    const lastScrollTime = useRef(0)
+    const lastScrollTime = useRef(Date.now()) // Start with cooldown to prevent accidental scroll from previous page
     const [showWarning, setShowWarning] = useState(false)
     const [warningStep, setWarningStep] = useState(0) // 0: None, 1: Warning
 
