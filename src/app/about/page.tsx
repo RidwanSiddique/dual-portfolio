@@ -62,9 +62,9 @@ export default function AboutPage() {
                         boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
                     }}>
                         <img
-                            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80"
+                            src='/assets/dp.JPG'
                             alt="Ridwan Siddique"
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%' }}
                         />
                     </div>
 
@@ -80,8 +80,8 @@ export default function AboutPage() {
 
                     {/* Contact Info */}
                     <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center', color: '#ccc', fontSize: '0.95rem' }}>
-                        <a href="mailto:ridwan@example.com" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span>✉️</span> ridwan@example.com
+                        <a href="mailto:rsiddique244@gmail.com" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>✉️</span> rsiddique244@gmail.com
                         </a>
                         <span style={{ color: '#444' }}>|</span>
                         <a href="https://github.com/RidwanSiddique" target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '8px' }}>

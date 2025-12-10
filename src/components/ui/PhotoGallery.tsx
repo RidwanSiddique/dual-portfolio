@@ -28,14 +28,20 @@ export function PhotoGallery() {
     const [photos, setPhotos] = useState(GENERATE_PHOTOS(0, 5))
     const [loading, setLoading] = useState(false)
 
-    // Infinite Scroll
+    // Limited Scroll (max 10 photos)
     const handleScroll = () => {
+        if (photos.length >= 10) return // Stop loading after 10 photos
+        
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
             if (!loading) {
                 setLoading(true)
                 // Simulate network delay
                 setTimeout(() => {
-                    setPhotos(prev => [...prev, ...GENERATE_PHOTOS(prev.length, 5)])
+                    setPhotos(prev => {
+                        const newPhotos = [...prev, ...GENERATE_PHOTOS(prev.length, 5)]
+                        // Ensure we don't exceed 10 photos
+                        return newPhotos.slice(0, 10)
+                    })
                     setLoading(false)
                 }, 500)
             }
@@ -45,7 +51,7 @@ export function PhotoGallery() {
     useEffect(() => {
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
-    }, [loading])
+    }, [loading, photos.length])
 
     return (
         <div style={{
@@ -65,7 +71,11 @@ export function PhotoGallery() {
 
             {/* Loader / Footer */}
             <div style={{ marginTop: '60px', textAlign: 'center' }}>
-                {photos.length < 10 ? (
+                {photos.length < 10 && !loading ? (
+                    <div style={{ padding: '20px', color: '#666' }}>
+                        Scroll down to see more exhibits...
+                    </div>
+                ) : loading ? (
                     <div style={{ padding: '20px', color: '#666' }}>
                         Loading more exhibits...
                     </div>
@@ -90,8 +100,8 @@ export function PhotoGallery() {
                         <div style={{ fontSize: '48px' }}>🎨</div>
                         <h2 style={{ color: '#fff', fontSize: '24px', margin: 0 }}>Step Into The Darkroom</h2>
                         <p style={{ color: '#888', textAlign: 'center', lineHeight: '1.6' }}>
-                            Want to see how these photos are made? <br />
-                            Enter the editing suite to experiment with presets and adjustments.
+                            You've seen all 10 exhibition pieces! <br />
+                            Want to see how these photos are made? Enter the editing suite to experiment with presets and adjustments.
                         </p>
                         <Link href="/photographer/editor">
                             <button style={{
