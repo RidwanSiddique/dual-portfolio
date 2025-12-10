@@ -24,54 +24,101 @@ const GENERATE_PHOTOS = (startId: number, count: number) => {
     }))
 }
 
-export function PhotoGallery() {
-    const [photos, setPhotos] = useState(GENERATE_PHOTOS(0, 5))
+export function PhotoGallery({ enableScrollNavigation = false }: { enableScrollNavigation?: boolean }) {
+    const [photos, setPhotos] = useState(GENERATE_PHOTOS(0, 10)) // Load all 10 photos initially
     const [loading, setLoading] = useState(false)
 
-    // Limited Scroll (max 10 photos)
-    const handleScroll = () => {
-        if (photos.length >= 10) return // Stop loading after 10 photos
+    // Only enable internal scroll if not using scroll navigation
+    useEffect(() => {
+        if (enableScrollNavigation) return // Don't use internal scroll with navigation
         
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
-            if (!loading) {
-                setLoading(true)
-                // Simulate network delay
-                setTimeout(() => {
-                    setPhotos(prev => {
-                        const newPhotos = [...prev, ...GENERATE_PHOTOS(prev.length, 5)]
-                        // Ensure we don't exceed 10 photos
-                        return newPhotos.slice(0, 10)
-                    })
-                    setLoading(false)
-                }, 500)
+        const handleScroll = () => {
+            if (photos.length >= 10) return // Stop loading after 10 photos
+            
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+                if (!loading) {
+                    setLoading(true)
+                    // Simulate network delay
+                    setTimeout(() => {
+                        setPhotos(prev => {
+                            const newPhotos = [...prev, ...GENERATE_PHOTOS(prev.length, 5)]
+                            // Ensure we don't exceed 10 photos
+                            return newPhotos.slice(0, 10)
+                        })
+                        setLoading(false)
+                    }, 500)
+                }
             }
         }
-    }
 
-    useEffect(() => {
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
-    }, [loading, photos.length])
+    }, [loading, photos.length, enableScrollNavigation])
 
     return (
-        <div style={{
-            minHeight: '100vh',
-            background: '#f4f4f4', // Gallery Wall Color
-            backgroundImage: 'radial-gradient(#e0e0e0 1px, transparent 1px)',
-            backgroundSize: '20px 20px',
-            padding: '120px 20px 40px 20px', // Top padding for navbar
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '150px' // Large gap between photos
-        }}>
+        <div 
+            data-scroll-container
+            style={{
+                height: enableScrollNavigation ? '100vh' : 'auto',
+                minHeight: enableScrollNavigation ? 'unset' : '100vh',
+                overflowY: enableScrollNavigation ? 'auto' : 'visible',
+                scrollBehavior: 'smooth',
+                background: '#f4f4f4', // Gallery Wall Color
+                backgroundImage: 'radial-gradient(#e0e0e0 1px, transparent 1px)',
+                backgroundSize: '20px 20px',
+                padding: '120px 20px 40px 20px', // Top padding for navbar
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '150px' // Large gap between photos
+            }}>
             {photos.map((photo, index) => (
                 <GalleryItem key={photo.id} photo={photo} index={index} />
             ))}
 
             {/* Loader / Footer */}
             <div style={{ marginTop: '60px', textAlign: 'center' }}>
-                {photos.length < 10 && !loading ? (
+                {enableScrollNavigation ? (
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        style={{
+                            padding: '60px',
+                            background: '#111',
+                            borderRadius: '20px',
+                            border: '1px solid #333',
+                            maxWidth: '600px',
+                            margin: '0 auto',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '20px'
+                        }}
+                    >
+                        <div style={{ fontSize: '48px' }}>🎨</div>
+                        <h2 style={{ color: '#fff', fontSize: '24px', margin: 0 }}>Step Into The Darkroom</h2>
+                        <p style={{ color: '#888', textAlign: 'center', lineHeight: '1.6' }}>
+                            You've seen all 10 exhibition pieces! <br />
+                            Want to see how these photos are made? Enter the editing suite to experiment with presets and adjustments.
+                        </p>
+                        <Link href="/photographer/editor">
+                            <button style={{
+                                padding: '16px 32px',
+                                background: '#007AFF', // Lightroom Blue-ish
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '8px',
+                                fontSize: '16px',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 12px rgba(0,122,255,0.3)'
+                            }}>
+                                Open Lightroom Classic
+                            </button>
+                        </Link>
+                    </motion.div>
+                ) : photos.length < 10 && !loading ? (
                     <div style={{ padding: '20px', color: '#666' }}>
                         Scroll down to see more exhibits...
                     </div>

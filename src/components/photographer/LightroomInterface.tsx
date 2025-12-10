@@ -74,18 +74,21 @@ export function LightroomInterface() {
     }
 
     return (
-        <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100vh',
-            background: '#1a1a1a', // Adobe Dark Grey
-            color: '#bbb',
-            fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-            overflow: 'hidden'
-        }}>
+        <div 
+            data-scroll-container
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh',
+                background: '#1a1a1a', // Adobe Dark Grey
+                color: '#bbb',
+                fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                overflow: 'hidden'
+            }}>
             {/* Top Bar */}
             <div style={{
                 height: '40px',
+                marginTop: '40px',
                 background: '#2a2a2a',
                 display: 'flex',
                 alignItems: 'center',
